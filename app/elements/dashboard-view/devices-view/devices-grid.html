@@ -1,0 +1,91 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="devices-grid">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <vaadin-grid id="grid">
+      <table>
+        <colgroup>
+          <col name="number" header-text="#" flex="1">
+          <col name="type" header-text="Type" flex="2">
+          <col name="name" header-text="Name" flex="4">
+          <col name="id" header-text="Identifier" flex="3">
+          <col name="state" header-text="Status" flex="2">
+          <col name="power" header-text="Curr. PWR" flex="3">
+          <col name="history" header-text="PWR History" width="180px">
+        </colgroup>
+        <tbody>
+          <tr>
+            <td>1</td><td>A13</td><td>1:1:1</td><td>ON</td><td>75%</td><td>Sparkline</td>
+          </tr>
+        </tbody>
+      </table>
+    </vaadin-grid>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'devices-grid',
+
+        properties: {
+          greeting: {
+            type: String,
+            value: 'Welcome!',
+            notify: true
+          }
+        },
+
+        ready: function() {
+          console.log('ready');
+
+          var devices = [
+            { number: 1, id: '1:1:1', name: 'Lounge', type: 'A13', state: 1, power: 75, history: [10, 15, 16, 8, 3, 7, 10, 5, 1] }
+          ];
+
+          var sparklineRenderer = function(cell) {
+            cell.element.innerHTML = '';
+            var sparkline = document.createElement('vaadin-sparkline');
+            sparkline.setAttribute('data', cell.data);
+            sparkline.style.height = "80%";
+            sparkline.style.width = "90%";
+            cell.element.appendChild(sparkline);
+          };
+
+          var progressRenderer = function(cell) {
+            cell.element.innerHTML = '';
+            var child = document.createElement('progress');
+            child.setAttribute('value', cell.data / 100);
+            cell.element.appendChild(child);
+          };
+
+          var statusRenderer = function(cell) {
+            cell.element.innerHTML = '<span class="status-' + cell.data + '">' + (cell.data ? 'ON' : 'OFF') + '</span>';
+          };
+
+          var grid = this.$.grid
+          grid.items = devices
+
+          grid.columns[4].renderer = statusRenderer;
+          grid.columns[5].renderer = progressRenderer;
+          grid.columns[6].renderer = sparklineRenderer;
+
+          setTimeout(function() {
+            console.log('push')
+            devices[0].type = 'A14'
+            devices.push({ number: 1, id: '1:1:1', type: 'A13', state: 1, power: 75 })
+            grid.clearCache()
+          }, 2000)
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
