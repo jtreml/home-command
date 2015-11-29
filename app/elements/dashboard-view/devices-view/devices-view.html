@@ -2,8 +2,8 @@
 
 <dom-module id="devices-view">
   <template>
-    <devices-grid></devices-grid>
-    <dashboard-gauges></dashboard-gauges>
+    <devices-grid hue-device-service="[[hueDeviceService]]"></devices-grid>
+    <dashboard-gauges hue-device-service="[[hueDeviceService]]"></dashboard-gauges>
   </template>
 
   <script>
@@ -14,6 +14,7 @@
         is: 'devices-view',
 
         properties: {
+          hueDeviceService: Object
         },
 
         ready: function() {

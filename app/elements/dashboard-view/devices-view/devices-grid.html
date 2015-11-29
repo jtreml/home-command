@@ -8,22 +8,33 @@
         display: block;
       }
     </style>
-    <vaadin-grid id="grid">
+    <vaadin-grid id="grid" frozen-columns="1">
       <table>
         <colgroup>
-          <col name="number" header-text="#" flex="1">
-          <col name="type" header-text="Type" flex="2">
-          <col name="name" header-text="Name" flex="4">
-          <col name="id" header-text="Identifier" flex="3">
-          <col name="state" header-text="Status" flex="2">
-          <col name="power" header-text="Curr. PWR" flex="3">
-          <col name="history" header-text="PWR History" width="180px">
+          <col name="number" flex="1" sortable="true">
+          <col name="type" flex="2" sortable="true">
+          <col name="name" flex="4" sortable="true">
+          <col name="id" flex="3" sortable="true">
+          <col flex="2" sortable="true">
+          <col name="powerRelative" flex="3" sortable="true">
+          <col name="history" width="180px">
         </colgroup>
-        <tbody>
+        <thead>
           <tr>
-            <td>1</td><td>A13</td><td>1:1:1</td><td>ON</td><td>75%</td><td>Sparkline</td>
+            <th></th>
+            <th colspan="3">Device Information</th>
+            <th colspan="3">Device Status</th>
           </tr>
-        </tbody>
+          <tr>
+            <th>#</th>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Identifier</th>
+            <th>Status</th>
+            <th>Power Consumption</th>
+            <th>Consumption History</th>
+          </tr>
+        </thead>
       </table>
     </vaadin-grid>
   </template>
@@ -36,20 +47,10 @@
         is: 'devices-grid',
 
         properties: {
-          greeting: {
-            type: String,
-            value: 'Welcome!',
-            notify: true
-          }
+          hueDeviceService: Object
         },
 
         ready: function() {
-          console.log('ready');
-
-          var devices = [
-            { number: 1, id: '1:1:1', name: 'Lounge', type: 'A13', state: 1, power: 75, history: [10, 15, 16, 8, 3, 7, 10, 5, 1] }
-          ];
-
           var sparklineRenderer = function(cell) {
             cell.element.innerHTML = '';
             var sparkline = document.createElement('vaadin-sparkline');
@@ -62,27 +63,33 @@
           var progressRenderer = function(cell) {
             cell.element.innerHTML = '';
             var child = document.createElement('progress');
-            child.setAttribute('value', cell.data / 100);
+            child.setAttribute('value', cell.data);
             cell.element.appendChild(child);
           };
 
           var statusRenderer = function(cell) {
-            cell.element.innerHTML = '<span class="status-' + cell.data + '">' + (cell.data ? 'ON' : 'OFF') + '</span>';
+            var style = cell.row.data.reachable
+              ? (cell.row.data.on ? 'status-on' : 'status-off') : 'status-unreachable'
+            var value = cell.row.data.reachable
+              ? (cell.row.data.on ? 'ON' : 'OFF') : 'N/A'
+            cell.element.innerHTML = '<span class="' + style + '">' + value + '</span>';
           };
 
           var grid = this.$.grid
-          grid.items = devices
-
           grid.columns[4].renderer = statusRenderer;
           grid.columns[5].renderer = progressRenderer;
           grid.columns[6].renderer = sparklineRenderer;
+        },
 
-          setTimeout(function() {
-            console.log('push')
-            devices[0].type = 'A14'
-            devices.push({ number: 1, id: '1:1:1', type: 'A13', state: 1, power: 75 })
-            grid.clearCache()
-          }, 2000)
+        attached: function() {
+          this.hueDeviceService.addEventListener('lights-changed', this._updateLights.bind(this))
+        },
+
+        _updateLights: function(e) {
+          var lights = e.detail
+          lights.forEach((light, index) => light.number = index + 1)
+          console.log(lights)
+          this.$.grid.items = lights
         }
       });
     })();
