@@ -7,6 +7,10 @@
   </template>
 
   <script>
+    // Note: There are a few cases this code doesn't currently account for
+    // 1. Reauthentication for users no longer valid (e.g. bridge reset)
+    // 2. Removing lights from bridge
+
     (function() {
       'use strict';
 
@@ -14,6 +18,10 @@
         is: 'hue-device-service',
 
         properties: {
+          hueDeviceService: {
+            type: Object,
+            notify: true
+          },
           hue: {
             type: Object,
             value: jsHue()
@@ -24,38 +32,68 @@
           },
           users: {
             type: Object
-          },
-          connections: {
-            type: Object,
-            value: {}
           }
         },
 
         ready: function() {
+          this.hueDeviceService = this
           // Temp connection code (will have to be triggered manually per brigde
           // afterwards since it requires the user to push the link button on bridge)
-          var that = this
+          var _this = this
           this._searchBridges().then(function() {
-            for(var id in that.bridges) {
-              var conn = that.connections[id]
-              if(!conn) {
-                that._createUser.bind(that)(id)
-                  .then(that._connectToBridges.bind(that))
+            for(var id in _this.bridges) {
+              if(!_this.bridges[id].connection) {
+                _this._createUser.bind(_this)(id)
+                  .then(_this._connectToBridges.bind(_this))
               }
             }
-          }).then(that.getBriges.bind(that))
+          })
+          .then(function() {
+            Object.keys(_this.bridges)
+              .filter(bridge => _this.bridges[bridge].connection)
+              .forEach(bridge => _this._updateLights.bind(_this)(bridge).then(_this.getLights.bind(_this)))
+          })
         },
 
-        getBriges: function() {
-          var that = this
+        getBridges: function() {
+          var _this = this
           return Object.keys(this.bridges)
             .map(id => this.bridges[id])
             .map(bridge => ({
               id: bridge.id,
               ip: bridge.ip,
               discovered: bridge.discovered,
-              connected: that.connections[bridge.id] !== undefined
+              user: _this.users[bridge.id],
+              connected: bridge.connection !== undefined
             }))
+        },
+
+        getLights: function() {
+          var _this = this
+          var result = []
+          Object.keys(this.bridges)
+            .map(id => Object.keys(_this.bridges[id].lights)
+              .map(lightId => _this.bridges[id].lights[lightId])
+              .forEach(light => result.push(_this._getLight(light))))
+          return result
+        },
+
+        _getLight: function(light) {
+          return {
+            id: light.id,
+            name: light.name,
+            model: light.model,
+            type: light.type,
+            manufacturer: light.manufacturer,
+            software: light.software,
+            brightness: light.brightness,
+            saturation: light.saturation,
+            hue: light.hue,
+            powerAbsolute: 10 * light.brightness / 254,
+            powerRelative: light.brightness / 254,
+            on: light.on,
+            reachable: light.reachable
+          }
         },
 
         _initUsers: function() {
@@ -74,61 +112,124 @@
         },
 
         _createUser: function(bridge) {
-          var that = this
+          var _this = this
           return new Promise(function(resolve, reject) {
-            that.hue.bridge(that.bridges[bridge].ip)
+            _this.hue.bridge(_this.bridges[bridge].ip)
               .createUser('home-command', function(data) {
                 if(!data[0].success) {
                   reject(data[0].error)
                   return
                 }
                 console.log('Created user for bridge ' + bridge)
-                that._saveUser.bind(that)(bridge, data[0].success.username)
+                _this._saveUser.bind(_this)(bridge, data[0].success.username)
               }, reject)
           })
         },
 
         _searchBridges: function() {
-          var that = this
-          var bs = that.bridges
+          var _this = this
+          var bs = _this.bridges
           return new Promise(function(resolve, reject) {
-            that.hue.discover(
+            _this.hue.discover(
               function(bridges) {
                 bridges.forEach(function(bridge) {
-                  if (that.bridges[bridge.id]) {
+                  if (_this.bridges[bridge.id]) {
                     console.log('Update bridge ' + bridge.id)
-                    that.bridges[bridge.id].discovered = Date()
-                    if(that.bridges[bridge.id].ip !== bridge.ip) {
+                    _this.bridges[bridge.id].discovered = Date()
+                    if(_this.bridges[bridge.id].ip !== bridge.ip) {
                       console.log('IP change for bridge ' + bridge.id)
-                      that.bridges[bridge.id].ip = bridge.ip
-                      delete that.connections[bridge.id]
+                      _this.bridges[bridge.id].ip = bridge.ip
+                      delete _this.bridges[bridge.id].connection
+                      clearInterval(_this.bridges[bridge.id].interval)
+                      delete _this.bridges[bridge.id].interval
                     }
                   } else {
                     console.log('New bridge ' + bridge.id)
-                    that.bridges[bridge.id] = {
+                    _this.bridges[bridge.id] = {
                       id: bridge.id,
                       ip: bridge.internalipaddress,
-                      discovered: Date()
+                      discovered: Date(),
+                      lights: {}
                     }
                   }
                 })
                 resolve()
               }),
               reject
-            }).then(that._connectToBridges.bind(that))
+            }).then(_this._connectToBridges.bind(_this))
         },
 
         _connectToBridges: function() {
-          var that = this
+          var _this = this
           Object.keys(this.bridges)
-            .filter((id) => !that.bridges[id].connected)
+            .filter((id) => !_this.bridges[id].connected)
             .forEach(function(id) {
-              var user = that._getUser(id)
+              var user = _this._getUser(id)
               if(user) {
                 console.log('Connected to bridge ' + id)
-                that.connections[id] = that.hue.bridge(that.bridges[id].ip).user(user)
+                _this.bridges[id].connection = _this.hue.bridge(_this.bridges[id].ip).user(user)
+                _this.bridges[id].interval = setInterval(
+                  function() { _this._updateLights.bind(_this)(id) }, 150)
               }
             })
+          _this.fire('bridges-changed');
+        },
+
+        _updateLights: function(bridge) {
+          var _this = this
+          return new Promise(function(resolve, reject) {
+            _this.bridges[bridge].connection.getLights(function(data) {
+              console.log('Updating lights of bridge ' + bridge)
+              var change = false
+              Object.keys(data).forEach(id => {
+                change |= _this._udpateLight.bind(_this)(bridge, data[id])
+
+              })
+
+              console.log('Lights change: ' + change)
+              if(change)
+                _this.fire('lights-changed', _this.getLights())
+
+              resolve()
+            }, reject)
+          })
+        },
+
+        _udpateLight: function(bridge, data) {
+          var change = false
+
+          var lights = this.bridges[bridge].lights
+          var light = lights[data.uniqueid]
+          if(!light) {
+            lights[data.uniqueid] = light = {}
+            change = true
+          }
+
+          change |= this._updateProperty(data, light, 'name', 'name')
+          change |= this._updateProperty(data, light, 'modelid', 'model')
+          change |= this._updateProperty(data, light, 'type', 'type')
+          change |= this._updateProperty(data, light, 'uniqueid', 'id')
+          change |= this._updateProperty(data, light, 'manufacturername', 'manufacturer')
+          change |= this._updateProperty(data, light, 'swversion', 'software')
+
+          change |= this._updateProperty(data.state, light, 'bri', 'brightness')
+          change |= this._updateProperty(data.state, light, 'hue', 'hue')
+          change |= this._updateProperty(data.state, light, 'sat', 'saturation')
+          change |= this._updateProperty(data.state, light, 'on', 'on')
+          change |= this._updateProperty(data.state, light, 'reachable', 'reachable')
+
+          if(change)
+            this.fire('light-' + light.id + '-changed', this._getLight(light))
+
+          return change
+        },
+
+        _updateProperty: function(srcObj, targetObj, srcProp, targetProp) {
+          if(srcObj[srcProp] != targetObj[targetProp]) {
+            targetObj[targetProp] = srcObj[srcProp]
+            return true
+          }
+          return false
         }
       });
     })();
