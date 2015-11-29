@@ -1,0 +1,96 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="settings-view">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      vaadin-grid /deep/ .status-connected {
+          color: green;
+      }
+
+      vaadin-grid /deep/ paper-button.colorful {
+        background-color: #fbe1a2;
+        height: 20px;
+        padding-top: 0.3em;
+      }
+
+    </style>
+
+    <paper-header-panel class="fit">
+
+      <paper-tabs class="paper-header" id="settingsTabs" selected="0" no-bar="true">
+        <paper-tab>Bridges</paper-tab>
+      </paper-tabs>
+
+      <iron-pages selected="0">
+        <vaadin-grid id="grid" class="fit">
+          <table>
+            <colgroup>
+              <col name="number" header-text="#" flex="1">
+              <col name="id" header-text="Identifier" flex="4">
+              <col name="ip" header-text="IP Address" flex="3">
+              <col name="user" header-text="User" flex="4">
+              <col name="connected" header-text="Status" flex="4">
+            </colgroup>
+          </table>
+        </vaadin-grid>
+      </iron-pages>
+    </paper-header-panel>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'settings-view',
+
+        properties: {
+          hueDeviceService: Object
+        },
+
+        listeners: {
+          'click': '_clickConnect'
+        },
+
+        ready: function() {
+          var statusRenderer = function(cell) {
+            if(cell.data) {
+              cell.element.innerHTML = '<span class="status-connected">Connected</span>';
+            } else {
+              cell.element.innerHTML = '<paper-button id="abc123" raised class="colorful">Connect</paper-button>';
+            }
+          };
+
+          var grid = this.$.grid
+          grid.columns[4].renderer = statusRenderer;
+        },
+
+        attached: function() {
+          this.hueDeviceService.addEventListener('bridges-changed', this._updateBridges.bind(this))
+        },
+
+        _updateBridges: function() {
+          var bridges = this.hueDeviceService.getBridges()
+          bridges.forEach((bridge, index) => bridge.number = index + 1)
+
+          var grid = this.$.grid
+          grid.items = bridges
+        },
+
+        _clickConnect: function(e) {
+          if(e.srcElement.tagName.toLowerCase() === 'paper-button') {
+            console.log('button click')
+            //e.preventDefault();
+            //e.stopPropagation();
+          }
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

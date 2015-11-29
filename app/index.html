@@ -63,7 +63,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
-    <hue-device-service></hue-device-service>
+
+    <hue-device-service hue-device-service="{{hueDeviceService}}"></hue-device-service>
 
     <paper-header-panel class="fit">
 
@@ -143,7 +144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </section>
 
             <section data-route="settings">
-              <h2>settings</h2>
+              <settings-view hue-device-service="[[hueDeviceService]]"></settings-view>
             </section>
 
           </iron-pages>
