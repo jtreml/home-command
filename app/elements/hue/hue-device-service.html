@@ -1,0 +1,137 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+
+<dom-module id="hue-device-service">
+  <template>
+    <iron-localstorage id="bridgeUserStorage" name="bridge-user-storage" value="{{users}}" on-iron-localstorage-load-empty="_initUsers" autoSaveDisabled="true"></iron-localstorage>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hue-device-service',
+
+        properties: {
+          hue: {
+            type: Object,
+            value: jsHue()
+          },
+          bridges: {
+            type: Object,
+            value: {}
+          },
+          users: {
+            type: Object
+          },
+          connections: {
+            type: Object,
+            value: {}
+          }
+        },
+
+        ready: function() {
+          // Temp connection code (will have to be triggered manually per brigde
+          // afterwards since it requires the user to push the link button on bridge)
+          var that = this
+          this._searchBridges().then(function() {
+            for(var id in that.bridges) {
+              var conn = that.connections[id]
+              if(!conn) {
+                that._createUser.bind(that)(id)
+                  .then(that._connectToBridges.bind(that))
+              }
+            }
+          }).then(that.getBriges.bind(that))
+        },
+
+        getBriges: function() {
+          var that = this
+          return Object.keys(this.bridges)
+            .map(id => this.bridges[id])
+            .map(bridge => ({
+              id: bridge.id,
+              ip: bridge.ip,
+              discovered: bridge.discovered,
+              connected: that.connections[bridge.id] !== undefined
+            }))
+        },
+
+        _initUsers: function() {
+          this.users = {}
+        },
+
+        _saveUser: function(bridge, user) {
+          this.$.bridgeUserStorage.reload()
+          this.set('users.' + bridge, user)
+          this.$.bridgeUserStorage.save()
+        },
+
+        _getUser: function(bridge) {
+          this.$.bridgeUserStorage.reload()
+          return this.get('users')[bridge]
+        },
+
+        _createUser: function(bridge) {
+          var that = this
+          return new Promise(function(resolve, reject) {
+            that.hue.bridge(that.bridges[bridge].ip)
+              .createUser('home-command', function(data) {
+                if(!data[0].success) {
+                  reject(data[0].error)
+                  return
+                }
+                console.log('Created user for bridge ' + bridge)
+                that._saveUser.bind(that)(bridge, data[0].success.username)
+              }, reject)
+          })
+        },
+
+        _searchBridges: function() {
+          var that = this
+          var bs = that.bridges
+          return new Promise(function(resolve, reject) {
+            that.hue.discover(
+              function(bridges) {
+                bridges.forEach(function(bridge) {
+                  if (that.bridges[bridge.id]) {
+                    console.log('Update bridge ' + bridge.id)
+                    that.bridges[bridge.id].discovered = Date()
+                    if(that.bridges[bridge.id].ip !== bridge.ip) {
+                      console.log('IP change for bridge ' + bridge.id)
+                      that.bridges[bridge.id].ip = bridge.ip
+                      delete that.connections[bridge.id]
+                    }
+                  } else {
+                    console.log('New bridge ' + bridge.id)
+                    that.bridges[bridge.id] = {
+                      id: bridge.id,
+                      ip: bridge.internalipaddress,
+                      discovered: Date()
+                    }
+                  }
+                })
+                resolve()
+              }),
+              reject
+            }).then(that._connectToBridges.bind(that))
+        },
+
+        _connectToBridges: function() {
+          var that = this
+          Object.keys(this.bridges)
+            .filter((id) => !that.bridges[id].connected)
+            .forEach(function(id) {
+              var user = that._getUser(id)
+              if(user) {
+                console.log('Connected to bridge ' + id)
+                that.connections[id] = that.hue.bridge(that.bridges[id].ip).user(user)
+              }
+            })
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
