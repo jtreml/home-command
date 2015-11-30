@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="devices-grid">
+<dom-module id="devices-view">
+
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -8,7 +9,7 @@
         display: block;
       }
     </style>
-    <vaadin-grid id="grid" frozen-columns="1">
+    <vaadin-grid id="grid" frozen-columns="1" class="fit">
       <table>
         <colgroup>
           <col name="number" flex="1" sortable="true">
@@ -44,7 +45,7 @@
       'use strict';
 
       Polymer({
-        is: 'devices-grid',
+        is: 'devices-view',
 
         properties: {
           hueDeviceService: Object

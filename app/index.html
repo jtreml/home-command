@@ -124,14 +124,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </paper-tabs>
 
                 <!-- Pages for each tab (floor plan, device list) -->
-                <iron-pages selected="{{dashboardTabSelected}}">
+                <div class="fit layout vertical">
+                  <iron-pages selected="{{dashboardTabSelected}}" class="flex" style="position: relative;">
 
-                  <!-- Floor plan -->
-                  <floor-plan-view></floor-plan-view>
+                    <!-- Floor plan -->
+                    <floor-plan-view class="fit"></floor-plan-view>
 
-                  <!-- Device list -->
-                  <devices-view hue-device-service="[[hueDeviceService]]"></devices-view>
-                </iron-pages>
+                    <!-- Device list -->
+                    <devices-view class="fit vertical layout" hue-device-service="[[hueDeviceService]]"></devices-view>
+                  </iron-pages>
+
+                  <!-- Dashboard gauges -->
+                  <dashboard-gauges hue-device-service="[[hueDeviceService]]" style="height: 200px;"></dashboard-gauges>
+                </div>
               </paper-header-panel>
             </section>
 
