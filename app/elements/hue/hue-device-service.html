@@ -89,7 +89,8 @@
             brightness: light.brightness,
             saturation: light.saturation,
             hue: light.hue,
-            powerAbsolute: 10 * light.brightness / 254,
+            powerMax: light.powerMax,
+            powerAbsolute: light.powerMax * light.brightness / 254,
             powerRelative: light.brightness / 254,
             on: light.on,
             reachable: light.reachable
@@ -217,6 +218,9 @@
           change |= this._updateProperty(data.state, light, 'sat', 'saturation')
           change |= this._updateProperty(data.state, light, 'on', 'on')
           change |= this._updateProperty(data.state, light, 'reachable', 'reachable')
+
+          // Hack (this info should come from the device but isn't available)
+          light.powerMax = 10
 
           if(change)
             this.fire('light-' + light.id + '-changed', this._getLight(light))

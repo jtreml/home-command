@@ -9,24 +9,32 @@
       }
     </style>
     <paper-material elevation="2" class="layout horizontal">
-      <vaadin-solidgauge-chart id="solid-gauge" class="flex" style="height: 200px;">
+      <vaadin-solidgauge-chart id="chartConsumption" class="flex" style="height: 200px;">
+        <chart>
+          <animation duration="16"></animation>
+        </chart>
         <title text=""></title>
         <pane start-angle="-90" end-angle="90" size="140%">
-          <center>50%,85%</center>
+          <center>50%,90%</center>
           <background background-color="#EEE" inner-radius="60%" outer-radius="100%" shape="arc"></background>
         </pane>
-        <y-axis minor-tick-interval="" tick-width="0" tick-interval="200" min="0" max="200">
-          <title text="Speed" y="-70"></title>
-          <labels y="16">
+        <y-axis minor-tick-interval="" tick-width="0" min="0" >
+          <title text="Power Consumption" y="-70"></title>
+          <labels y="17">
         </y-axis>
         <tooltip enabled="false"></tooltip>
+        <exporting enabled="false"></exporting>
         <plot-options>
+          <series>
+            <data-labels enabled="true" format='<div style="text-align:center"><span style="font-size:25px;color:black;">{y:.1f}</span><br/><span style="font-size:12px;color:silver">Watt</span></div>'>
+            </data-labels>
+          </series>
           <solidgauge>
             <data-labels y="5" border-width="0" use-html="true"></data-labels>
           </solidgauge>
         </plot-options>
-        <data-series name="Speed">
-          <data>80</data>
+        <data-series name="Power Consumption">
+          <data>0</data>
         </data-series>
       </vaadin-solidgauge-chart>
     </paper-material>
@@ -40,10 +48,30 @@
         is: 'dashboard-gauges',
 
         properties: {
+          hueDeviceService: Object
         },
 
         ready: function() {
           console.log('gauges');
+        },
+
+        attached: function() {
+          this.hueDeviceService.addEventListener('lights-changed', this._updateConsumption.bind(this))
+        },
+
+        _updateConsumption: function(e) {
+          var total = 0, current = 0
+          e.detail.forEach(light => { total += light.powerMax; current += light.on ? light.powerAbsolute : 0 })
+
+          var chart = this.$.chartConsumption.chart
+          if(chart.axes[1].max != total) {
+            var axis = chart.axes[1]
+            var options = axis.userOptions
+            options.max = total
+            options.tickInterval = total
+            axis.setOptions(options)
+          }
+          chart.series[0].points[0].update(current)
         }
       });
     })();
