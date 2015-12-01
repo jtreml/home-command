@@ -40,16 +40,14 @@
         </data-series>
       </vaadin-solidgauge-chart>
 
-      <!-- Power consumption chart -->
+      <!-- Power consumption per bulb chart -->
       <vaadin-spline-chart id="chartConsumptionCurrent" class="flex" style="height: 100%; flex: 99;">
-        <chart margin-top="40" >
-          <animation duration="16"></animation>
-        </chart>
+        <chart margin-top="40" animation="false"></chart>
         <title text="Power Consumption per Bulb" margin="0" y="16"
           style='{"color": "#666666", "font-size": "13px"}'></title>
         <exporting enabled="false"></exporting>
 
-        <x-axis type="datetime">
+        <x-axis type="datetime" min-tick-interval="1000" end-on-tick="true" crosshair="true">
             <date-time-label-formats
               millisecond="%H:%M:%S"
               second="%H:%M:%S"
@@ -60,17 +58,23 @@
               month="%H:%M:%S"
               year="%H:%M:%S">
             </date-time-label-formats>
-            <labels y="12" style='{"font-size": "11px"}'>
+            <labels y="14" style='{"font-size": "11px"}' auto-rotation="">
         </x-axis>
 
-        <y-axis min="0">
-            <title text="Watt" margin="10" style='{"color": "#999999", "font-size": "11px"}'>
+        <y-axis min="0" line-width="1" minor-tick-interval="2.5">
+            <title text="Watt" margin="1" style='{"color": "#999999", "font-size": "11px"}'>
             </title>
             <labels x="-4" style='{"font-size": "11px"}'>
         </y-axis>
 
+        <y-axis min="0" line-width="1" opposite="true">
+            <title text="Watt" margin="1" style='{"color": "#999999", "font-size": "11px"}'>
+            </title>
+            <labels x="4" style='{"font-size": "11px"}'>
+        </y-axis>
+
         <tooltip header-format="<b>{series.name}</b><br>"
-                 point-format="{point.x:%e. %b}: {point.y:2f} m">
+                 point-format="{point.y:.1f} W">
         </tooltip>
 
         <legend margin="2" padding="3" item-style='{"color": "#999999", "font-size": "11px"}'>
@@ -80,7 +84,12 @@
             <spline>
                 <marker enabled="false"></marker>
             </spline>
+            <areaspline fill-opacity="0.2" line-width="0">
+                <marker enabled="false"></marker>
+            </areaspline>
         </plot-options>
+
+        <data-series name="Total" y-axis="1" type="areaspline" color="#cccccc" opacity="0.2"></data-series>
     </vaadin-spline-chart>
     </paper-material>
   </template>
@@ -102,6 +111,7 @@
           },
           total: Number,
           current: Number,
+          max: Number,
           interval: Object,
           windowSize: {
             type: Number,
@@ -143,11 +153,11 @@
             }
             _this.lights[light.id].removed = false
             _this.lights[light.id].t = t
-            _this.lights[light.id].power = light.reachable && light.on ? light.powerAbsolute : 0
+            _this.lights[light.id].power = light.on ? light.powerAbsolute : 0
           })
 
           // Update calculated data
-          this._updateDataCurrentAndTotal(lights)
+          this._updateAggregateData(lights)
 
           // Update charts
           this._updateChartConsumptionTotal()
@@ -161,12 +171,13 @@
             .forEach(light => _this.lights[light].added = _this.lights[light].removed = false )
         },
 
-        _updateDataCurrentAndTotal: function(lights) {
-          this.total = this.current = 0
+        _updateAggregateData: function(lights) {
+          this.total = this.current = this.max = 0
           var _this = this
           lights.forEach(light => {
             _this.total += light.powerMax
-            _this.current += light.reachable && light.on ? light.powerAbsolute : 0
+            _this.max = Math.max(_this.max, light.powerMax)
+            _this.current += light.on ? light.powerAbsolute : 0
           })
         },
 
@@ -186,11 +197,28 @@
           var _this = this
           var chart = this.$.chartConsumptionCurrent.chart
 
-          var limit = Date.now() - this.windowSize
+          var t = Date.now()
+          var limit = t - this.windowSize
+
+          // Update chart y-axis max (if necessary)
+          if(chart.axes[1].max != this.max) {
+            var axis = chart.axes[1]
+            var options = axis.userOptions
+            options.max = this.max
+            axis.setOptions(options)
+          }
+          if(chart.axes[2].max != this.total) {
+            var axis = chart.axes[2]
+            var options = axis.userOptions
+            options.max = this.total
+            axis.setOptions(options)
+          }
 
           Object.keys(this.lights).forEach(id => {
             var light = _this.lights[id]
 
+            // Create new series for added lights
+            // anb remove series for lights no longer present
             if(light.added) {
               chart.addSeries({
                 name: light.name,
@@ -202,20 +230,26 @@
               delete light.series
             }
 
+            // Update series' values
+            // (cutting of start outside window, adding new data points to end)
             if(!light.removed) {
-              var series = light.series
-              var data = series.data
-              while(data.length > 0 && data[0].x <= limit) {
-                series.removePoint(0, false)
-              }
-
-              if(data.length == 0 || data[data.length - 1].x < light.t) {
-                series.addPoint([light.t, light.power], false)
-              }
+              _this._updateSeries(light.series, limit, light.t, light.power)
             }
           })
 
+          _this._updateSeries(chart.series[0], limit, t, this.current)
           chart.redraw()
+        },
+
+        _updateSeries: function(series, limit, current, value) {
+          var data = series.data
+          while(data.length > 0 && data[0].x < limit) {
+            series.removePoint(0, false)
+          }
+
+          if(data.length == 0 || data[data.length - 1].x < current) {
+            series.addPoint([current, value], false)
+          }
         }
       });
     })();
