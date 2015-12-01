@@ -42,7 +42,7 @@
 
       <!-- Power consumption per bulb chart -->
       <vaadin-spline-chart id="chartConsumptionCurrent" class="flex" style="height: 100%; flex: 99;">
-        <chart margin-top="40" animation="false"></chart>
+        <chart margin-top="40" animation="false" align-ticks="false"></chart>
         <title text="Power Consumption per Bulb" margin="0" y="16"
           style='{"color": "#666666", "font-size": "13px"}'></title>
         <exporting enabled="false"></exporting>
@@ -67,7 +67,8 @@
             <labels x="-4" style='{"font-size": "11px"}'>
         </y-axis>
 
-        <y-axis min="0" line-width="1" opposite="true">
+        <y-axis min="0" line-width="1" opposite="true" grid-line-width="0" minor-grid-line-width="0"
+          max-padding="0" tick-interval="20" minor-tick-interval="10" end-on-tick="false">
             <title text="Watt" margin="1" style='{"color": "#999999", "font-size": "11px"}'>
             </title>
             <labels x="4" style='{"font-size": "11px"}'>
