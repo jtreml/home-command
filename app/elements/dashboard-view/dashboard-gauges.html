@@ -8,18 +8,20 @@
         display: block;
       }
     </style>
-    <paper-material elevation="2" class="layout horizontal">
-      <vaadin-solidgauge-chart id="chartConsumption" class="flex" style="height: 200px;">
+    <paper-material elevation="2" class="layout horizontal" style="height: 200px;">
+
+      <!-- Power consumption gauge -->
+      <vaadin-solidgauge-chart id="chartConsumptionTotal" class="flex" style="height: 100%; min-width: 270px;">
         <chart>
           <animation duration="16"></animation>
         </chart>
         <title text=""></title>
         <pane start-angle="-90" end-angle="90" size="140%">
-          <center>50%,90%</center>
+          <center>50%,85%</center>
           <background background-color="#EEE" inner-radius="60%" outer-radius="100%" shape="arc"></background>
         </pane>
         <y-axis minor-tick-interval="" tick-width="0" min="0" >
-          <title text="Power Consumption" y="-70"></title>
+          <title text="Power Consumption" y="-70" style='{"font-size": "13px"}'></title>
           <labels y="17">
         </y-axis>
         <tooltip enabled="false"></tooltip>
@@ -37,10 +39,55 @@
           <data>0</data>
         </data-series>
       </vaadin-solidgauge-chart>
+
+      <!-- Power consumption chart -->
+      <vaadin-spline-chart id="chartConsumptionCurrent" class="flex" style="height: 100%; flex: 99;">
+        <chart margin-top="40" >
+          <animation duration="16"></animation>
+        </chart>
+        <title text="Power Consumption per Bulb" margin="0" y="16"
+          style='{"color": "#666666", "font-size": "13px"}'></title>
+        <exporting enabled="false"></exporting>
+
+        <x-axis type="datetime">
+            <date-time-label-formats
+              millisecond="%H:%M:%S"
+              second="%H:%M:%S"
+              minute="%H:%M:%S"
+              hour="%H:%M:%S"
+              day="%H:%M:%S"
+              week="%H:%M:%S"
+              month="%H:%M:%S"
+              year="%H:%M:%S">
+            </date-time-label-formats>
+            <labels y="12" style='{"font-size": "11px"}'>
+        </x-axis>
+
+        <y-axis min="0">
+            <title text="Watt" margin="10" style='{"color": "#999999", "font-size": "11px"}'>
+            </title>
+            <labels x="-4" style='{"font-size": "11px"}'>
+        </y-axis>
+
+        <tooltip header-format="<b>{series.name}</b><br>"
+                 point-format="{point.x:%e. %b}: {point.y:2f} m">
+        </tooltip>
+
+        <legend margin="2" padding="3" item-style='{"color": "#999999", "font-size": "11px"}'>
+        </legend>
+
+        <plot-options>
+            <spline>
+                <marker enabled="false"></marker>
+            </spline>
+        </plot-options>
+    </vaadin-spline-chart>
     </paper-material>
   </template>
 
   <script>
+    // Note: Doesn't handle permanent bulb removal
+
     (function() {
       'use strict';
 
@@ -48,30 +95,127 @@
         is: 'dashboard-gauges',
 
         properties: {
-          hueDeviceService: Object
+          hueDeviceService: Object,
+          lights: {
+            type: Object,
+            value: {}
+          },
+          total: Number,
+          current: Number,
+          interval: Object,
+          windowSize: {
+            type: Number,
+            value: 10  * 1000
+          }
         },
 
         ready: function() {
-          console.log('gauges');
         },
 
         attached: function() {
-          this.hueDeviceService.addEventListener('lights-changed', this._updateConsumption.bind(this))
+          var _this = this
+
+          var fUpdate = this._update.bind(this)
+
+          this.hueDeviceService.addEventListener('lights-changed',
+            function(e) { fUpdate(e.detail) })
+          this.interval = setInterval(
+            function() { fUpdate(_this.hueDeviceService.getLights()) }, 1000)
         },
 
-        _updateConsumption: function(e) {
-          var total = 0, current = 0
-          e.detail.forEach(light => { total += light.powerMax; current += light.on ? light.powerAbsolute : 0 })
+        _update: function(lights) {
+          var _this = this
 
-          var chart = this.$.chartConsumption.chart
-          if(chart.axes[1].max != total) {
+          var t = Date.now()
+
+          // Mark all cached lights as 'removed'
+          Object.keys(this.lights)
+            .forEach(light => _this.lights[light].removed = true)
+
+          // Loop through updated lights, add enw ones to cache,
+          // clear cache 'removed' flag on those that still exist
+          lights.forEach(light => {
+            if(!_this.lights[light.id]) {
+              _this.lights[light.id] = {
+                name: light.name,
+                added: true
+              }
+            }
+            _this.lights[light.id].removed = false
+            _this.lights[light.id].t = t
+            _this.lights[light.id].power = light.reachable && light.on ? light.powerAbsolute : 0
+          })
+
+          // Update calculated data
+          this._updateDataCurrentAndTotal(lights)
+
+          // Update charts
+          this._updateChartConsumptionTotal()
+          this._updateConsumptionPerBulb()
+
+          // Remove those from chache still marked as 'removed'
+          Object.keys(this.lights)
+            .filter(light => _this.lights[light].removed)
+            .forEach(light => delete _this.lights[light])
+          Object.keys(this.lights)
+            .forEach(light => _this.lights[light].added = _this.lights[light].removed = false )
+        },
+
+        _updateDataCurrentAndTotal: function(lights) {
+          this.total = this.current = 0
+          var _this = this
+          lights.forEach(light => {
+            _this.total += light.powerMax
+            _this.current += light.reachable && light.on ? light.powerAbsolute : 0
+          })
+        },
+
+        _updateChartConsumptionTotal: function() {
+          var chart = this.$.chartConsumptionTotal.chart
+          if(chart.axes[1].max != this.total) {
             var axis = chart.axes[1]
             var options = axis.userOptions
-            options.max = total
-            options.tickInterval = total
+            options.max = this.total
+            options.tickInterval = this.total
             axis.setOptions(options)
           }
-          chart.series[0].points[0].update(current)
+          chart.series[0].points[0].update(this.current)
+        },
+
+        _updateConsumptionPerBulb: function(lights) {
+          var _this = this
+          var chart = this.$.chartConsumptionCurrent.chart
+
+          var limit = Date.now() - this.windowSize
+
+          Object.keys(this.lights).forEach(id => {
+            var light = _this.lights[id]
+
+            if(light.added) {
+              chart.addSeries({
+                name: light.name,
+                data: []
+              })
+              light.series = chart.series[chart.series.length - 1]
+            } else if(light.removed && light.series) {
+              light.series.remove()
+              delete light.series
+            }
+
+            if(!light.removed) {
+              var series = light.series
+              var data = series.data
+              while(data.length > 0 && data[0].x <= limit) {
+                series.removePoint(0, false)
+              }
+
+              if(data.length == 0 || data[data.length - 1].x < light.t) {
+                series.addPoint([light.t, light.power], false)
+              }
+            }
+          })
+
+          chart.redraw()
         }
       });
     })();
