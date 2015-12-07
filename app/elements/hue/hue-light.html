@@ -91,7 +91,11 @@
 
         _updateColor: function() {
           // hue < 0.1 -> hue = 0.1, brightness = 0.8
-          var rgb = this._hsvToRgb(this.hue, this.saturation, 1)
+          var rgb
+          if(isNaN(this.hue) || this.saturation < 0.07)
+            rgb = { r: 225, g: 225, b: 225 }
+          else
+            rgb = this._hsvToRgb(this.hue, this.saturation, 1)
 
           var color = 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')'
 
