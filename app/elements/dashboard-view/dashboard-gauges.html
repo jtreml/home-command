@@ -2,15 +2,17 @@
 
 <dom-module id="dashboard-gauges">
   <template>
-  <style include="shared-styles"></style>
+    <style include="shared-styles"></style>
     <style>
       :host {
         display: block;
       }
     </style>
+
     <paper-material elevation="2" class="layout horizontal" style="height: 200px;">
 
       <!-- Power consumption gauge -->
+<!-- 
       <vaadin-solidgauge-chart id="chartConsumptionTotal" class="flex" style="height: 100%; min-width: 270px;">
         <chart>
           <animation duration="0" enabled="false"></animation>
@@ -42,18 +44,24 @@
           <data>0</data>
         </data-series>
       </vaadin-solidgauge-chart>
+ -->
+
 
       <!-- Power consumption per bulb chart -->
-      <vaadin-spline-chart id="chartConsumptionCurrent" class="flex" style="height: 100%; flex: 99;">
-        <chart margin-top="40" animation="false" align-ticks="false">
+<!--       <vaadin-spline-chart id="chartConsumptionCurrent" class="flex" style="height: 100%; flex: 99;">
+        <chart margin-top="40" animation="false" align-ticks="false"
+          zoom-type="x">
           <animation duration="0" enabled="false"></animation>
         </chart>
         <title text="Power Consumption per Bulb" margin="0" y="16"
-          style='{"color": "#666666", "font-size": "13px"}'></title>
+          style='{"color": "#666666", "font-size": "13px"}'></title> -->
+
+
+<!-- 
         <exporting enabled="false"></exporting>
 
-        <x-axis type="datetime" min-tick-interval="1000" end-on-tick="false" crosshair="true"
-          max-padding="0" min-padding="0" >
+        <x-axis type="datetime" min-tick-interval="1000" end-on-tick="false"
+          crosshair="true" max-padding="0" min-padding="0" >
             <date-time-label-formats
               millisecond="%H:%M:%S"
               second="%H:%M:%S"
@@ -67,15 +75,19 @@
             <labels y="14" style='{"font-size": "11px"}' auto-rotation="">
         </x-axis>
 
-        <y-axis min="0" line-width="1" minor-tick-interval="2.5" start-on-tick="true" end-on-tick="true"
+        <y-axis min="0" line-width="1" minor-tick-interval="2.5"
+          start-on-tick="true" end-on-tick="true"
           max-padding="0" min-padding="0" >
             <title text="Watt" margin="1" style='{"color": "#999999", "font-size": "11px"}'></title>
             <labels x="-4" style='{"font-size": "11px"}'>
         </y-axis>
 
-        <y-axis min="0" line-width="1" opposite="true" grid-line-width="0" minor-grid-line-width="0"
-          max-padding="0" min-padding="0" tick-interval="20" minor-tick-interval="10" start-on-tick="true" end-on-tick="true">
-            <title text="Watt" margin="1" style='{"color": "#999999", "font-size": "11px"}'></title>
+        <y-axis min="0" line-width="1" opposite="true" grid-line-width="0"
+          minor-grid-line-width="0" max-padding="0" min-padding="0"
+          tick-interval="20" minor-tick-interval="10" start-on-tick="true"
+          end-on-tick="true">
+            <title text="Watt" margin="1"
+              style='{"color": "#999999", "font-size": "11px"}'></title>
             <labels x="4" style='{"font-size": "11px"}'>
         </y-axis>
 
@@ -83,7 +95,8 @@
                  point-format="{point.y:.1f} W">
         </tooltip>
 
-        <legend margin="2" padding="3" item-style='{"color": "#999999", "font-size": "11px"}'>
+        <legend margin="2" padding="3"
+          item-style='{"color": "#999999", "font-size": "11px"}'>
         </legend>
 
         <plot-options>
@@ -94,9 +107,43 @@
                 <marker enabled="false"></marker>
             </areaspline>
         </plot-options>
+ -->
 
-        <data-series name="Total" y-axis="1" type="areaspline" color="#cccccc" opacity="0.2"></data-series>
-    </vaadin-spline-chart>
+<!--         <plot-options>
+            <areaspline fill-opacity="0.4"></areaspline>
+        </plot-options>
+
+        <data-series name="Total" y-axis="0" type="areaspline"
+          color="#cccccc">
+          <data>
+            [0, 10],
+            [1, 20],
+            [2, 15],
+            [3, 5],
+            [4, 12],
+            [5, 30],
+            [6, 40],
+            [7, 60],
+            [8, 10]
+          </data>
+        </data-series>
+        <data-series name="Other" y-axis="0" type="areaspline"
+          color="#0000ff">
+          <data>
+            [0.5, 10],
+            [1.5, 20],
+            [2.5, 15],
+            [3.5, 5],
+            [4.5, 12],
+            [5.5, 30],
+            [6.5, 40],
+            [7.5, 60],
+            [8.5, 10]
+          </data>
+        </data-series>
+    </vaadin-spline-chart> -->
+
+
     </paper-material>
   </template>
 
@@ -134,10 +181,10 @@
 
           var fUpdate = this._update.bind(this)
 
-          this.hueDeviceService.addEventListener('lights-changed',
-            function(e) { fUpdate(e.detail) })
-          this.interval = setInterval(
-            function() { fUpdate(_this.hueDeviceService.getLights()) }, 1000)
+          // this.hueDeviceService.addEventListener('lights-changed',
+          //   function(e) { fUpdate(e.detail) })
+          // this.interval = setInterval(
+          //   function() { fUpdate(_this.hueDeviceService.getLights()) }, 1000)
 
           this.async(function() {
             if(_this.$.chartConsumptionTotal && _this.$.chartConsumptionTotal.chart)
@@ -174,7 +221,7 @@
           this._updateAggregateData(lights)
 
           // Update charts
-          this._updateChartConsumptionTotal()
+          // this._updateChartConsumptionTotal()
           this._updateConsumptionPerBulb()
 
           // Remove those from chache still marked as 'removed'
