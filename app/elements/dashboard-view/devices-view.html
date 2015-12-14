@@ -134,11 +134,11 @@
             var color = cell.row.data.reachable
               ? (cell.row.data.on ? 'var(--hue-state-color-on)' : 'var(--hue-state-color-off)')
                 : 'var(--hue-state-color-na)'
-            cell.element.innerHTML = '';
-            var child = document.createElement('paper-progress');
-            child.setAttribute('value', cell.data * 100);
+            cell.element.innerHTML = ''
+            var child = document.createElement('paper-progress')
+            child.setAttribute('value', cell.data * 100)
             child.customStyle['--paper-progress-active-color'] = color
-            cell.element.appendChild(child);
+            cell.element.appendChild(child)
           };
 
           var statusRenderer = function(cell) {
@@ -146,13 +146,13 @@
               ? (cell.row.data.on ? 'status-on' : 'status-off') : 'status-unreachable'
             var value = cell.row.data.reachable
               ? (cell.row.data.on ? 'ON' : 'OFF') : 'N/A'
-            cell.element.innerHTML = '<span class="status ' + style + '">' + value + '</span>';
+            cell.element.innerHTML = '<span class="status ' + style + '">' + value + '</span>'
           };
 
           var grid = this.$.grid
-          grid.columns[1].renderer = bulbRenderer;
-          grid.columns[4].renderer = statusRenderer;
-          grid.columns[5].renderer = progressRenderer;
+          grid.columns[1].renderer = bulbRenderer
+          grid.columns[4].renderer = statusRenderer
+          grid.columns[5].renderer = progressRenderer
           // grid.columns[6].renderer = sparklineRenderer
 
           grid.rowDetailsGenerator = function(rowIndex) {
