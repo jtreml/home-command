@@ -174,6 +174,8 @@
           grid.addEventListener("selected-items-changed", function() {
             fSelCh(false)
           })
+
+          grid.addEventListener('sort-order-changed', this._sort.bind(this))
         },
 
         _selectionChanged: function(inside) {
@@ -228,6 +230,33 @@
 
           grid.size = grid.items.length
           grid.refreshItems()
+        },
+
+        _sort: function() {
+          var grid = this.$.grid
+
+          if(!grid.sortOrder)
+            return
+
+          var sorts = []
+          grid.sortOrder.forEach(sort => sorts.push({
+            col: sort.column,
+            lesser: sort.direction == 'asc' ? -1 : 1,
+            prop: grid.columns[sort.column].name
+          }))
+
+          grid.items.sort(function(a, b) {
+            var result = 0
+            for(var i = 0; i < sorts.length; i++) {
+              var sort = sorts[i]
+              result = a[sort.prop] < b[sort.prop] ? sort.lesser
+                : (a[sort.prop] > b[sort.prop] ? -sort.lesser : 0)
+              if(result != 0) {
+                return result
+              }
+            }
+            return result
+          })
         }
       });
     })();
