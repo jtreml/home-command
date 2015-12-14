@@ -1,0 +1,112 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/web-audio-sample-demo/drum-machine.html">
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+
+<dom-module id="history-view">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+
+        paper-toolbar {
+          --paper-toolbar-background: var(--secondary-background-color);
+        }
+      }
+
+      div.label {
+        color: white;
+        font-size: 0.9em;
+      }
+    </style>
+
+    <paper-header-panel class="fit">
+
+      <paper-toolbar>
+        <paper-icon-button id="add" icon="add-box" on-tap="_add"></paper-icon-button>
+        <paper-tooltip for="add" position="right">Add [[next]] items</paper-tooltip>
+        <div class="title"></div>
+        <div class="label">[[items]] items in grid</div>
+      </paper-toolbar>
+
+      <vaadin-grid id="grid" class="fit">
+        <table>
+          <colgroup>
+            <col name="number">
+            <col name="type">
+            <col name="name">
+            <col name="id">
+            <col name="status">
+            <col name="powerRelative">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Identifier</th>
+              <th>Status</th>
+              <th>Power Consumption</th>
+            </tr>
+          </thead>
+        </table>
+      </vaadin-grid>
+    </paper-header-panel>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'history-view',
+
+        properties: {
+          items: {
+            type: Number,
+            value: 0
+          },
+          next: {
+            type: Number,
+            value: 10
+          },
+        },
+
+        ready: function() {
+        },
+
+        attached: function() {
+        },
+
+        _add: function() {
+          var grid = this.$.grid
+          var items = grid.items
+          if(!items)
+            items = grid.items = []
+
+          for(var i = 0; i < this.next; i++) {
+            items.push(this._generateItem(grid.items.length + 1))
+          }
+
+          grid.size = grid.items.length
+          grid.refreshItems()
+
+          this.next *= 10
+          this.items = grid.items.length
+        },
+
+        _generateItem: function(index) {
+          return {
+            number: index,
+            type: 'A17',
+            name: 'Some light',
+            id: '32-34-12-32-ad-3f-23-12',
+            status: Math.random() < 0.5 ? 0 : 1,
+            powerRelative: Math.random()
+          }
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
