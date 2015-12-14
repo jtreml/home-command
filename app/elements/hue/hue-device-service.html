@@ -32,6 +32,10 @@
           },
           users: {
             type: Object
+          },
+          _refreshRate: {
+            type: Number,
+            value: 150
           }
         },
 
@@ -191,7 +195,7 @@
                 // console.log('Connected to bridge ' + id)
                 _this.bridges[id].connection = _this.hue.bridge(_this.bridges[id].ip).user(user)
                 _this.bridges[id].interval = setInterval(
-                  function() { _this._updateLights.bind(_this)(id) }, 150)
+                  function() { _this._updateLights.bind(_this)(id) }, _this._refreshRate)
               }
             })
           _this.fire('bridges-changed');
