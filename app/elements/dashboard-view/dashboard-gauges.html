@@ -47,7 +47,8 @@
           style='{"color": "#666666", "font-size": "13px"}'></title>
         <exporting enabled="false"></exporting>
 
-        <x-axis type="datetime" min-tick-interval="1000" end-on-tick="true" crosshair="true">
+        <x-axis type="datetime" min-tick-interval="1000" end-on-tick="false" crosshair="true"
+          max-padding="0" min-padding="0" >
             <date-time-label-formats
               millisecond="%H:%M:%S"
               second="%H:%M:%S"
@@ -242,10 +243,26 @@
 
         _updateSeries: function(series, limit, current, value) {
           var data = series.data
+
+          // Cut off all points that have fallen outside the window
+          // (but remember the last one in case we need to interpolate)
+          var x, y
           while(data.length > 0 && data[0].x < limit) {
+            x = data[0].x
+            y = data[0].y
             series.removePoint(0, false)
           }
 
+          // If earliest points still in list is strictly after the limit,
+          // interpolate with previously removed point to get a value exactly
+          // at the limit and avoid jumpy lines at the beginning of the chart
+          if(data.length > 0 && x && data[0].x > limit) {
+            var rel = (limit - x) / (data[0].x - x)
+            var val = y + (data[0].y - y) * rel
+            series.addPoint([limit, val], false)
+          }
+
+          // Add new point to the list
           if(data.length == 0 || data[data.length - 1].x < current) {
             series.addPoint([current, value], false)
           }
