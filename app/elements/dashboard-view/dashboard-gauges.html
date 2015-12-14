@@ -138,6 +138,13 @@
             function(e) { fUpdate(e.detail) })
           this.interval = setInterval(
             function() { fUpdate(_this.hueDeviceService.getLights()) }, 1000)
+
+          this.async(function() {
+            if(_this.$.chartConsumptionTotal && _this.$.chartConsumptionTotal.chart)
+              _this.$.chartConsumptionTotal.chart.reflow();
+            if(_this.$.chartConsumptionCurrent && _this.$.chartConsumptionCurrent.chart)
+            _this.$.chartConsumptionCurrent.chart.reflow();
+          }, 200);
         },
 
         _update: function(lights) {
