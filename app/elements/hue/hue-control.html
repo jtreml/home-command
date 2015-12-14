@@ -24,7 +24,7 @@
       </div>
       <div class="layout vertical">
         <color-picker id="colorPicker" width="200" height="200"></color-picker>
-        <paper-slider id="slider" min="1" max="254" immediate-value="{{brightness}}" value="{{brightnessIn}}" disabled="[[!reachable]]" pin="true"></paper-slider>
+        <paper-slider id="slider" min="1" max="254" immediate-value="{{brightness}}" value="{{brightnessIn}}" disabled="[[!enabled]]" pin="true"></paper-slider>
       </div>
     </div>
   </template>
@@ -64,6 +64,7 @@
             type: Number,
             value: 0
           },
+          enabled: false,
 
           // Internal stuff
           _graceWindow: {
@@ -169,6 +170,8 @@
           this.set('myOn', light.on)
           this.set('on', light.on)
           this.set('reachable', light.reachable)
+
+          this.set('enabled', this.on && this.reachable)
         },
 
         _brightnessChanged: function(brightness) {
@@ -219,6 +222,7 @@
 
           this._lastChangeOut = Date.now()
           this.set('on', this.myOn)
+          this.set('enabled', this.on && this.reachable)
           this._updateLightState()
         },
 
