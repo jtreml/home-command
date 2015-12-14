@@ -13,7 +13,7 @@
       <!-- Power consumption gauge -->
       <vaadin-solidgauge-chart id="chartConsumptionTotal" class="flex" style="height: 100%; min-width: 270px;">
         <chart>
-          <animation duration="16"></animation>
+          <animation duration="0" enabled="false"></animation>
         </chart>
         <title text=""></title>
         <pane start-angle="-90" end-angle="90" size="140%">
@@ -42,7 +42,9 @@
 
       <!-- Power consumption per bulb chart -->
       <vaadin-spline-chart id="chartConsumptionCurrent" class="flex" style="height: 100%; flex: 99;">
-        <chart margin-top="40" animation="false" align-ticks="false"></chart>
+        <chart margin-top="40" animation="false" align-ticks="false">
+          <animation duration="0" enabled="false"></animation>
+        </chart>
         <title text="Power Consumption per Bulb" margin="0" y="16"
           style='{"color": "#666666", "font-size": "13px"}'></title>
         <exporting enabled="false"></exporting>
