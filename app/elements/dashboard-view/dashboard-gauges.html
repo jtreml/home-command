@@ -35,6 +35,9 @@
             <data-labels y="5" border-width="0" use-html="true"></data-labels>
           </solidgauge>
         </plot-options>
+        <data-series name="">
+          <data>0</data>
+        </data-series>
         <data-series name="Power Consumption">
           <data>0</data>
         </data-series>
@@ -114,6 +117,7 @@
           },
           total: Number,
           current: Number,
+          currentNa: Number,
           max: Number,
           interval: Object,
           windowSize: {
@@ -175,17 +179,19 @@
         },
 
         _updateAggregateData: function(lights) {
-          this.total = this.current = this.max = 0
+          this.total = this.current = this.currentNa = this.max = 0
           var _this = this
           lights.forEach(light => {
             _this.total += light.powerMax
             _this.max = Math.max(_this.max, light.powerMax)
             _this.current += light.on ? light.powerAbsolute : 0
+            _this.currentNa += light.on && !light.reachable ? light.powerAbsolute : 0
           })
         },
 
         _updateChartConsumptionTotal: function() {
           var chart = this.$.chartConsumptionTotal.chart
+
           if(chart.axes[1].max != this.total) {
             var axis = chart.axes[1]
             var options = axis.userOptions
@@ -193,6 +199,16 @@
             options.tickInterval = this.total
             axis.setOptions(options)
           }
+
+          var series = chart.series[1]
+          if(!series.userOptions.zones) {
+            var options = series.userOptions
+            options.zoneAxis = 'y'
+            options.zones = [{ value: undefined, color: '#88a1b8' }]
+            series.setOptions(options)
+          }
+
+          chart.series[1].points[0].update(this.currentNa)
           chart.series[0].points[0].update(this.current)
         },
 
