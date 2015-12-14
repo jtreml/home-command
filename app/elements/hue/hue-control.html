@@ -62,15 +62,18 @@
           reachable: false,
 
           // Internal stuff
-          graceWindow: {
+          _graceWindow: {
             type: Number,
-            value: 1 * 1000
+            value: 1 * 500
           },
-          lastChangeOut: {
+          _lastChangeOut: {
             type: Number,
             value: 0
           },
-          lastChangeIn: {
+          _lastChangeIn: {
+            type: Number,
+            value: 0
+          },
             type: Number,
             value: 0
           }
@@ -107,12 +110,12 @@
         _lightStateChanged: function(light) {
           console.log('_lightStateChanged')
 
-          if(Date.now() < this.lastChangeOut + this.graceWindow)
+          if(Date.now() < this._lastChangeOut + this._graceWindow)
             return
 
           console.log('_lightStateChanged FIRE')
 
-          this.lastChangeIn = Date.now()
+          this._lastChangeIn = Date.now()
           this.set('brightness', light.brightness)
           var color = {
             h: light.hue / 65280,
@@ -133,12 +136,12 @@
           if(!this.initialized)
             return
 
-          if(Date.now() < Math.max(this.lastChangeOut, this.lastChangeIn) + this.graceWindow)
+          if(Date.now() < this._lastChangeIn + this._graceWindow)
             return
 
           console.log('_brightnessChanged FIRE')
 
-          this.lastChangeOut = Date.now()
+          this._lastChangeOut = Date.now()
           this.set('color', {
             h: this.color.h,
             s: this.color.s,
@@ -153,12 +156,12 @@
           if(!this.initialized)
             return
 
-          if(Date.now() < Math.max(this.lastChangeOut, this.lastChangeIn) + this.graceWindow)
+          if(Date.now() < this._lastChangeIn + this._graceWindow)
             return
 
           console.log('_onChanged FIRE')
 
-          this.lastChangeOut = Date.now()
+          this._lastChangeOut = Date.now()
           this.set('on', this.myOn)
           this._updateLightState()
         },
@@ -169,13 +172,13 @@
           if(!this.initialized)
             return
 
-          if(Date.now() < Math.max(this.lastChangeOut, this.lastChangeIn) + this.graceWindow)
+          if(Date.now() < this._lastChangeIn + this._graceWindow)
             return
 
           console.log('_rgbChanged FIRE')
 
           var hsb = this._rgbToHsb(rgb)
-          this.lastChangeOut = Date.now()
+          this._lastChangeOut = Date.now()
           this.set('color', {
             h: hsb.h,
             s: hsb.s,
