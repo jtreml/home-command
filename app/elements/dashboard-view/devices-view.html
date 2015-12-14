@@ -8,7 +8,12 @@
       :host {
         display: block;
       }
+
+      #dialog {
+        border: 1px solid #dddddd;
+      }
     </style>
+
     <vaadin-grid id="grid" frozen-columns="1" class="fit">
       <table>
         <colgroup>
@@ -38,6 +43,13 @@
         </thead>
       </table>
     </vaadin-grid>
+    <paper-dialog id="dialog">
+      <h2>[[selectedLight.name]]</h2>
+      <hue-control hue-device-service="[[hueDeviceService]]" light="[[selectedLight.id]]"></hue-control>
+      <div class="buttons">
+        <paper-button dialog-confirm>OK</paper-button>
+      </div>
+    </paper-dialog>
   </template>
 
   <script>
@@ -48,10 +60,17 @@
         is: 'devices-view',
 
         properties: {
-          hueDeviceService: Object
+          hueDeviceService: Object,
+          selectedLight: Object
         },
 
+        observers: [
+          '_colorChanged(color)'
+        ],
+
         ready: function() {
+          var _this = this
+
           var sparklineRenderer = function(cell) {
             cell.element.innerHTML = '';
             var sparkline = document.createElement('vaadin-sparkline');
@@ -80,6 +99,15 @@
           grid.columns[4].renderer = statusRenderer;
           grid.columns[5].renderer = progressRenderer;
           grid.columns[6].renderer = sparklineRenderer;
+
+          grid.addEventListener("selected-items-changed", function() {
+            if(grid.selection.selected().length > 0) {
+              var i = grid.selection.selected()[0]
+              grid.selection.clear()
+              _this.selectedLight = grid.items[i]
+              _this.$.dialog.open()
+            }
+          })
         },
 
         attached: function() {
@@ -89,7 +117,7 @@
         _updateLights: function(e) {
           var lights = e.detail
           lights.forEach((light, index) => light.number = index + 1)
-          console.log(lights)
+          // console.log(lights)
           this.$.grid.items = lights
         }
       });
