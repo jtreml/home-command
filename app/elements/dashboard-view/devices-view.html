@@ -90,7 +90,11 @@
 
         properties: {
           hueDeviceService: Object,
-          selectedLight: Object
+          selectedLight: Object,
+          _detailsOpenIndex: {
+            type: Number,
+            value: -1
+          }
         },
 
         observers: [
@@ -151,14 +155,48 @@
           grid.columns[5].renderer = progressRenderer;
           // grid.columns[6].renderer = sparklineRenderer
 
+          grid.rowDetailsGenerator = function(rowIndex) {
+            var elem = document.createElement('hue-control')
+            elem.hueDeviceService = _this.hueDeviceService
+            elem.light = _this.selectedLight.id
+            elem.on = _this.selectedLight.on
+            elem.reachable = _this.selectedLight.reachable
+
+            grid.getItem(rowIndex, function(error, item) {
+              if (!error) {
+              }
+            })
+
+            return elem
+          }
+
+          var fSelCh = this._selectionChanged.bind(this)
           grid.addEventListener("selected-items-changed", function() {
-            if(grid.selection.selected().length > 0) {
-              var i = grid.selection.selected()[0]
-              grid.selection.clear()
-              _this.selectedLight = grid.items[i]
-              _this.$.dialog.open()
-            }
+            fSelCh(false)
           })
+        },
+
+        _selectionChanged: function(inside) {
+          var grid = this.$.grid
+
+          if(inside)
+            grid.setRowDetailsVisible(this._detailsOpenIndex, false)
+
+          var selected = grid.selection.selected()
+
+          if(selected.length > 0) {
+            var i = selected[0]
+            if(!inside)
+              grid.selection.clear()
+            this.selectedLight = grid.items[i]
+
+            if(inside) {
+              grid.setRowDetailsVisible(selected[0], true)
+              this._detailsOpenIndex = selected[0]
+            } else {
+              this.$.dialog.open()
+            }
+          }
         },
 
         attached: function() {
