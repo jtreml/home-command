@@ -10,7 +10,8 @@
     "page": "visionmedia/page.js#~1.6.3",
     "vaadin-elements": "0.3.0-beta12",
     "vaadin-charts": "^3.0.0-alpha7",
-    "jshue": "https://github.com/blargoner/jshue.git#0.3.0"
+    "jshue": "https://github.com/blargoner/jshue.git#0.3.0",
+    "color-picker-element": "~0.0.3",
   },
   "devDependencies": {
     "web-component-tester": "*",
