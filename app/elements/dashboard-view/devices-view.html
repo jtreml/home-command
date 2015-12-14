@@ -206,8 +206,6 @@
         _updateLights: function(e) {
           var lights = e.detail
           lights.forEach((light, index) => light.number = index + 1)
-          // console.log(lights)
-          this.$.grid.items = lights
           lights.forEach(light => light.status = light.reachable ? (light.on ? 1 : 0) : -1)
           // lights.forEach(light => {
           //   light.history = []
@@ -215,6 +213,21 @@
           //     light.history.push(Math.random())
           //   }
           // })
+
+          // console.log(lights)
+
+          var grid = this.$.grid
+
+          if(!grid.items)
+            grid.items = []
+
+          grid.items.splice(0, grid.items.length)
+          lights.forEach(light => grid.items.push(light))
+
+          this._sort()
+
+          grid.size = grid.items.length
+          grid.refreshItems()
         }
       });
     })();
