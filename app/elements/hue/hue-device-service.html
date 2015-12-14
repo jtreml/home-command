@@ -204,7 +204,7 @@
               console.log('Updating lights of bridge ' + bridge)
               var change = false
               Object.keys(data).forEach(id => {
-                change |= _this._udpateLight.bind(_this)(bridge, data[id])
+                change |= _this._udpateLight.bind(_this)(bridge, data[id], id)
 
               })
 
@@ -217,7 +217,7 @@
           })
         },
 
-        _udpateLight: function(bridge, data) {
+        _udpateLight: function(bridge, data, index) {
           var change = false
 
           var lights = this.bridges[bridge].lights
@@ -225,6 +225,11 @@
           if(!light) {
             lights[data.uniqueid] = light = {}
             change = true
+          }
+
+          if (light['index'] != index) {
+            change = true
+            light['index'] = index
           }
 
           change |= this._updateProperty(data, light, 'name', 'name')
