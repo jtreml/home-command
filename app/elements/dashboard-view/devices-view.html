@@ -171,6 +171,12 @@
           // console.log(lights)
           this.$.grid.items = lights
           lights.forEach(light => light.status = light.reachable ? (light.on ? 1 : 0) : -1)
+          // lights.forEach(light => {
+          //   light.history = []
+          //   for(var i = 0; i < 25; i++) {
+          //     light.history.push(Math.random())
+          //   }
+          // })
         }
       });
     })();
