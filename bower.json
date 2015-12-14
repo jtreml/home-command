@@ -12,6 +12,8 @@
     "vaadin-charts": "^3.0.0-alpha7",
     "jshue": "https://github.com/blargoner/jshue.git#0.3.0",
     "color-picker-element": "~0.0.3",
+    "vaadin-combo-box": "~1.0.0-alpha2",
+    "web-audio-sample-demo": "https://github.com/jtreml/web-audio-sample-demo.git#mods"
   },
   "devDependencies": {
     "web-component-tester": "*",

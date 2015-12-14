@@ -63,6 +63,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
+    <style>
+      a.secret {
+        opacity: 0.01;
+      }
+
+      a.secret.iron-selected {
+        opacity: 1;
+      }
+    </style>
 
     <hue-device-service hue-device-service="{{hueDeviceService}}"></hue-device-service>
 
@@ -102,6 +111,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <a data-route="settings" href="/settings" on-click="onDataRouteClick">
             <iron-icon icon="settings"></iron-icon>
             <span>Settings</span>
+          </a>
+
+          <a data-route="x" href="/x" on-click="onDataRouteClick" class="secret">
+            <iron-icon icon="visibility"></iron-icon>
+            <span>Secret</span>
           </a>
         </paper-menu>
 
@@ -152,6 +166,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <settings-view hue-device-service="[[hueDeviceService]]"></settings-view>
             </section>
 
+            <section data-route="x">
+              <x-view hue-device-service="[[hueDeviceService]]"></x-view>
+            </section>
           </iron-pages>
         </div>
       </paper-drawer-panel>

@@ -1,0 +1,174 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/web-audio-sample-demo/drum-machine.html">
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+
+<dom-module id="x-view">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+
+        paper-toolbar {
+          --paper-toolbar-background: var(--secondary-background-color);
+        }
+      }
+    </style>
+
+    <paper-header-panel class="fit">
+
+      <paper-toolbar>
+        <template is="dom-if" if="[[!play]]">
+          <paper-icon-button icon="av:play-circle-filled" on-tap="_togglePlay"></paper-icon-button>
+        </template>
+        <template is="dom-if" if="[[play]]">
+          <paper-icon-button icon="av:pause-circle-filled" on-tap="_togglePlay"></paper-icon-button>
+        </template>
+
+        <div class="title"></div>
+
+        <template is="dom-if" if="[[!visible]]">
+          <paper-icon-button icon="visibility" on-tap="_toggleVisible"></paper-icon-button>
+        </template>
+        <template is="dom-if" if="[[visible]]">
+          <paper-icon-button icon="visibility-off" on-tap="_toggleVisible"></paper-icon-button>
+        </template>
+
+        <template is="dom-if" if="[[!expertMode]]">
+          <paper-icon-button icon="create" on-tap="_toggleExpertMode"></paper-icon-button>
+        </template>
+        <template is="dom-if" if="[[expertMode]]">
+          <paper-icon-button icon="view-module" on-tap="_toggleExpertMode"></paper-icon-button>
+        </template>
+
+        <paper-icon-button icon="clear" on-tap="_clear"></paper-icon-button>
+      </paper-toolbar>
+
+      <drum-machine id="drum" class="fit" style="margin: 16px; max-height: 460px; min-height: 300px;" expert-mode="[[expertMode]]" play="[[play]]" custom="[[visible]]"></drum-machine>
+    </paper-header-panel>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'x-view',
+
+        properties: {
+          hueDeviceService: Object,
+          play: {
+            type: Boolean,
+            value: false
+          },
+          visible: {
+            type: Boolean,
+            value: false
+          },
+          expertMode: {
+            type: Boolean,
+            value: false
+          },
+          lights: {
+            type: Array,
+            value: []
+          },
+          assignment: {
+            type: Array,
+            value: []
+          },
+          _fLightUp: Object,
+          _fLightDown: Object
+        },
+
+        ready: function() {
+          this._fLightUp = this._lightUp.bind(this)
+          this._fLightDown = this._lightDown.bind(this)
+
+          this.$.drum.renderer = this._renderCombo.bind(this)
+          this.$.drum.addEventListener('play', this._play.bind(this))
+        },
+
+        attached: function() {
+          this.hueDeviceService.addEventListener('lights-changed', this._updateLights.bind(this))
+        },
+
+        _togglePlay: function() {
+          this.set('play', !this.play)
+        },
+
+        _toggleVisible: function() {
+          this.set('visible', !this.visible)
+        },
+
+        _toggleExpertMode: function() {
+          this.set('expertMode', !this.expertMode)
+        },
+
+        _clear: function() {
+          this.$.drum.clearTracks()
+        },
+
+        _renderCombo: function(cell, index) {
+          var fChanged = this._comboChanged.bind(this)
+          cell.innerHTML = ''
+          var child = document.createElement('vaadin-combo-box')
+          child.setAttribute('label', 'Device')
+          child.dataset.index = index
+          child.items = this.lights.map(light => light.name)
+          child.addEventListener('value-changed', function(e) {
+            fChanged(e.srcElement.dataset.index, e.detail.value)
+          })
+          cell.appendChild(child);
+        },
+
+        _comboChanged: function(index, value) {
+          this.assignment[index] = this.lights.findIndex(light => light.name == value)
+        },
+
+        _updateLights: function(e) {
+          // Don't retrieve from event here but get full list
+          // (since event may have only changed lights)
+          // TODO: Create event that fires onle when lights are added/removed or
+          // static light info changes (such as index)
+          var lights = this.hueDeviceService.getLights()
+          var same = this.lights.filter(light => lights.find(light2 => light.id == light2.id))
+          if(!same || same.length !== this.lights.length || this.lights.length != lights.length) {
+            this.lights = lights
+            this.$.drum.renderer = this._renderCombo.bind(this)
+          }
+        },
+
+        _play: function(e) {
+          var _this = this
+          var fLightUp = this._lightUp.bind(this)
+          e.detail.forEach(played => {
+            var light = _this.lights[_this.assignment[played.index]]
+            if(light) {
+              _this._fLightUp(light.id, played.rate)
+            }
+          })
+        },
+
+        _lightUp: function(light, rate) {
+          var _this = this
+          this.hueDeviceService.setLightState(light, {
+            on: true,
+            bri: 200,
+            transitiontime: 1
+          })
+          setTimeout(function() { _this._fLightDown(light) }, 200)
+        },
+
+        _lightDown: function(light) {
+          this.hueDeviceService.setLightState(light, {
+            on: true,
+            bri: 10,
+            transitiontime: 1
+          })
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
