@@ -136,6 +136,9 @@
             }
             this.fire('lights-changed', this.getLights())
           }.bind(this)
+
+          // Simulate network delay
+          setTimeout(f, 250)
         },
 
         _getLight: function(light) {
