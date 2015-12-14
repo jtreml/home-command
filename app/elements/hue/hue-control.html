@@ -149,12 +149,8 @@
         },
 
         _lightStateChanged: function(light) {
-          console.log('_lightStateChanged')
-
           if(Date.now() < this._lastChangeOut + this._graceWindow)
             return
-
-          console.log('_lightStateChanged FIRE')
 
           this._lastChangeIn = Date.now()
           this.set('brightness', light.brightness)
@@ -164,7 +160,6 @@
             s: light.saturation / 254,
             b: light.brightness / 254
           }
-          console.log(color)
           this.set('color', color)
 
           this.set('myOn', light.on)
@@ -175,15 +170,12 @@
         },
 
         _brightnessChanged: function(brightness) {
-          console.log('_brightnessChanged')
-
           if(!this.initialized)
             return
 
           if(Date.now() < this._lastChangeIn + this._graceWindow)
             return
 
-          console.log('_brightnessChanged FIRE')
           this._lastChangeBrightness = Date.now()
           this._brightnessToApply = brightness
           if(!this._isApplyingBrightness) {
@@ -210,15 +202,11 @@
         },
 
         _onChanged: function(myOn) {
-          console.log('_onChanged')
-
           if(!this.initialized)
             return
 
           if(Date.now() < this._lastChangeIn + this._graceWindow)
             return
-
-          console.log('_onChanged FIRE')
 
           this._lastChangeOut = Date.now()
           this.set('on', this.myOn)
@@ -227,15 +215,12 @@
         },
 
         _rgbChanged: function(rgb) {
-          console.log('_rgbChanged')
-
           if(!this.initialized)
             return
 
           if(Date.now() < this._lastChangeIn + this._graceWindow)
             return
 
-          console.log('_rgbChanged FIRE')
           this._lastChangeRgb = Date.now()
           this._rgbToApply = this._rgbToHsb(rgb)
           if(!this._isApplyingRgb) {

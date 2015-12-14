@@ -96,7 +96,6 @@
         setLightState: function(light, state) {
           for (var bridge in this.bridges) {
             if(this.bridges[bridge].lights[light]) {
-              console.log(state)
               this.bridges[bridge].connection.setLightState(
                 this.bridges[bridge].lights[light].index, state)
             }
@@ -146,7 +145,6 @@
                   reject(data[0].error)
                   return
                 }
-                // console.log('Created user for bridge ' + bridge)
                 _this._saveUser.bind(_this)(bridge, data[0].success.username)
               }, reject)
           })
@@ -160,17 +158,14 @@
               function(bridges) {
                 bridges.forEach(function(bridge) {
                   if (_this.bridges[bridge.id]) {
-                    // console.log('Update bridge ' + bridge.id)
                     _this.bridges[bridge.id].discovered = Date()
                     if(_this.bridges[bridge.id].ip !== bridge.ip) {
-                      // console.log('IP change for bridge ' + bridge.id)
                       _this.bridges[bridge.id].ip = bridge.ip
                       delete _this.bridges[bridge.id].connection
                       clearInterval(_this.bridges[bridge.id].interval)
                       delete _this.bridges[bridge.id].interval
                     }
                   } else {
-                    // console.log('New bridge ' + bridge.id)
                     _this.bridges[bridge.id] = {
                       id: bridge.id,
                       ip: bridge.internalipaddress,
@@ -192,7 +187,6 @@
             .forEach(function(id) {
               var user = _this._getUser(id)
               if(user) {
-                // console.log('Connected to bridge ' + id)
                 _this.bridges[id].connection = _this.hue.bridge(_this.bridges[id].ip).user(user)
                 _this.bridges[id].interval = setInterval(
                   function() { _this._updateLights.bind(_this)(id) }, _this._refreshRate)
@@ -205,14 +199,12 @@
           var _this = this
           return new Promise(function(resolve, reject) {
             _this.bridges[bridge].connection.getLights(function(data) {
-              // console.log('Updating lights of bridge ' + bridge)
               var change = false
               Object.keys(data).forEach(id => {
                 change |= _this._udpateLight.bind(_this)(bridge, data[id], id)
 
               })
 
-              // console.log('Lights change: ' + change)
               if(change)
                 _this.fire('lights-changed', _this.getLights())
 
