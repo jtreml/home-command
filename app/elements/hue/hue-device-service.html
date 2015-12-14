@@ -98,7 +98,7 @@
             if(this.bridges[bridge].lights[light]) {
               console.log(state)
               this.bridges[bridge].connection.setLightState(
-                this.bridges[bridge].lights[light].index, state, function(e) {  }, function(e2) {})
+                this.bridges[bridge].lights[light].index, state)
             }
           }
         },
