@@ -123,16 +123,19 @@
         },
 
         setLightState: function(light, state) {
-          for (var bridge in this.bridges) {
-            if(this.bridges[bridge].lights[light]) {
-              var l = this.bridges[bridge].lights[light]
-              l.brightness = state.bri
-              l.hue = state.hue
-              l.sat = state.sat
-              this.fire('lights-changed', this.getLights())
-              this.fire('light-' + light + '-changed', this.getLight(light))
+          var f = function() {
+            for (var bridge in this.bridges) {
+              if(this.bridges[bridge].lights[light]) {
+                var l = this.bridges[bridge].lights[light]
+                if(state.bri !== undefined) l.brightness = state.bri
+                if(state.hue !== undefined) l.hue = state.hue
+                if(state.sat !== undefined) l.sat = state.sat
+                if(state.on !== undefined) l.on = state.on
+                this.fire('light-' + light + '-changed', this.getLight(light))
+              }
             }
-          }
+            this.fire('lights-changed', this.getLights())
+          }.bind(this)
         },
 
         _getLight: function(light) {
