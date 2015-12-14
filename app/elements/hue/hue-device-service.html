@@ -78,6 +78,27 @@
           return result
         },
 
+        getLight: function(light) {
+          var _this = this
+          var result = undefined
+          Object.keys(this.bridges)
+            .map(id => Object.keys(_this.bridges[id].lights)
+              .filter(lightId => lightId == light)
+              .map(lightId => _this.bridges[id].lights[lightId])
+              .forEach(light => result = light))
+          return result
+        },
+
+        setLightState: function(light, state) {
+          for (var bridge in this.bridges) {
+            if(this.bridges[bridge].lights[light]) {
+              console.log(state)
+              this.bridges[bridge].connection.setLightState(
+                this.bridges[bridge].lights[light].index, state, function(e) {  }, function(e2) {})
+            }
+          }
+        },
+
         _getLight: function(light) {
           return {
             id: light.id,
