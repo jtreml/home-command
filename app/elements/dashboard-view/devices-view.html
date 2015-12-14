@@ -48,7 +48,7 @@
           <col name="type" flex="2" sortable="true">
           <col name="name" flex="4" sortable="true">
           <col name="id" flex="3" sortable="true">
-          <col flex="2" sortable="true">
+          <col name="status" flex="2" sortable="true">
           <col name="powerRelative" flex="3" sortable="true">
           <col name="history" width="180px">
         </colgroup>
@@ -170,6 +170,7 @@
           lights.forEach((light, index) => light.number = index + 1)
           // console.log(lights)
           this.$.grid.items = lights
+          lights.forEach(light => light.status = light.reachable ? (light.on ? 1 : 0) : -1)
         }
       });
     })();
