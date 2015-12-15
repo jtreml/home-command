@@ -1,0 +1,149 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+
+<dom-module id="hue-device-service">
+  <template>
+    <iron-localstorage id="bridgeUserStorage" name="bridge-user-storage" value="{{users}}" on-iron-localstorage-load-empty="_initUsers" autoSaveDisabled="true"></iron-localstorage>
+  </template>
+
+  <script>
+    // Note: There are a few cases this code doesn't currently account for
+    // 1. Reauthentication for users no longer valid (e.g. bridge reset)
+    // 2. Removing lights from bridge
+
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'hue-device-service',
+
+        properties: {
+          hueDeviceService: {
+            type: Object,
+            notify: true
+          },
+          hue: {
+            type: Object,
+            value: jsHue()
+          },
+          bridges: {
+            type: Object,
+            value: {
+              '123-456-789-0': {
+                id: 'aebf2738aeee25393',
+                ip: '127.0.0.1',
+                discovered: undefined,
+                connection: {},
+                lights: {
+                  'aeef2377729aff3223': {
+                    id: 'aeef2377729aff3223',
+                    index: 0,
+                    name: 'Living Room',
+                    model: '',
+                    type: 'A317',
+                    manufacturer: '',
+                    software: '',
+                    brightness: 200,
+                    saturation: 200,
+                    hue: 12345,
+                    powerMax: 10,
+                    on: false,
+                    reachable: false
+                  }
+                }
+              }
+            }
+          },
+          users: {
+            type: Object
+          }
+        },
+
+        ready: function() {
+          this.hueDeviceService = this
+        },
+
+        attached: function() {
+          var _this = this
+          var _fire = this.fire.bind(this)
+          setTimeout(function() {
+            _fire('bridges-changed');
+            _fire('lights-changed', _this.getLights());
+            _fire('light-aeef2377729aff3223-changed', _this.getLight('aeef2377729aff3223'));
+          }, 1000)
+        },
+
+        getBridges: function() {
+          var _this = this
+          return Object.keys(this.bridges)
+            .map(id => this.bridges[id])
+            .map(bridge => ({
+              id: bridge.id,
+              ip: bridge.ip,
+              discovered: bridge.discovered,
+              user: _this.users[bridge.id],
+              connected: bridge.connection !== undefined
+            }))
+        },
+
+        getLights: function() {
+          var _this = this
+          var result = []
+          Object.keys(this.bridges)
+            .map(id => Object.keys(_this.bridges[id].lights)
+              .map(lightId => _this.bridges[id].lights[lightId])
+              .forEach(light => result.push(_this._getLight(light))))
+          return result
+        },
+
+        getLight: function(light) {
+          var _this = this
+          var result = undefined
+          Object.keys(this.bridges)
+            .map(id => Object.keys(_this.bridges[id].lights)
+              .filter(lightId => lightId == light)
+              .map(lightId => _this.bridges[id].lights[lightId])
+              .forEach(light => result = light))
+          return result
+        },
+
+        setLightState: function(light, state) {
+          for (var bridge in this.bridges) {
+            if(this.bridges[bridge].lights[light]) {
+              var l = this.bridges[bridge].lights[light]
+              l.brightness = state.bri
+              l.hue = state.hue
+              l.sat = state.sat
+              this.fire('lights-changed', this.getLights())
+              this.fire('light-' + light + '-changed', this.getLight(light))
+            }
+          }
+        },
+
+        _getLight: function(light) {
+          return {
+            id: light.id,
+            name: light.name,
+            model: light.model,
+            type: light.type,
+            manufacturer: light.manufacturer,
+            software: light.software,
+            brightness: light.brightness,
+            saturation: light.saturation,
+            hue: light.hue,
+            powerMax: light.powerMax,
+            powerAbsolute: light.powerMax * light.brightness / 254,
+            powerRelative: light.brightness / 254,
+            on: light.on,
+            reachable: light.reachable
+          }
+        },
+
+        _initUsers: function() {
+          this.users = {}
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
