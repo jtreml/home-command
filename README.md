@@ -25,10 +25,12 @@ gulp serve
 ```
 
 **Option A: Use real Hue system**
+
 1. First time only: Press the button on your Hue bridge
 2. Click refresh in your browser to make the application reload and connect to bridge.
 
 **Option B: Use simulated lights**
+
 1. Open `app/elements/elements.html`
 2. Comment the real service and uncomment the fake service.
 
