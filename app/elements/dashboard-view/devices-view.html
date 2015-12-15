@@ -7,10 +7,37 @@
     <style>
       :host {
         display: block;
+
+        --hue-state-color-on: var(--default-primary-color);
+        --hue-state-color-off: #444444;
+        --hue-state-color-na: silver;
       }
 
       #dialog {
         border: 1px solid #dddddd;
+      }
+
+      /deep/ span.status {
+        background-color: red;
+        padding: 4px 8px 4px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 0.8em;
+      }
+
+      /deep/ span.status-on {
+        color: white;
+        background-color: var(--hue-state-color-on);
+      }
+
+      /deep/ span.status-unreachable {
+        color: white;
+        background-color: var(--hue-state-color-na);
+      }
+
+      /deep/ span.status-off {
+        color: white;
+        background-color: var(--hue-state-color-off);
       }
     </style>
 
@@ -94,7 +121,7 @@
               ? (cell.row.data.on ? 'status-on' : 'status-off') : 'status-unreachable'
             var value = cell.row.data.reachable
               ? (cell.row.data.on ? 'ON' : 'OFF') : 'N/A'
-            cell.element.innerHTML = '<span class="' + style + '">' + value + '</span>';
+            cell.element.innerHTML = '<span class="status ' + style + '">' + value + '</span>';
           };
 
           var grid = this.$.grid
