@@ -110,9 +110,13 @@
           };
 
           var progressRenderer = function(cell) {
+            var color = cell.row.data.reachable
+              ? (cell.row.data.on ? 'var(--hue-state-color-on)' : 'var(--hue-state-color-off)')
+                : 'var(--hue-state-color-na)'
             cell.element.innerHTML = '';
-            var child = document.createElement('progress');
-            child.setAttribute('value', cell.data);
+            var child = document.createElement('paper-progress');
+            child.setAttribute('value', cell.data * 100);
+            child.customStyle['--paper-progress-active-color'] = color
             cell.element.appendChild(child);
           };
 
