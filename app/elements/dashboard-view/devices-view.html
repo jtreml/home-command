@@ -43,9 +43,11 @@
         </thead>
       </table>
     </vaadin-grid>
+
     <paper-dialog id="dialog">
       <h2>[[selectedLight.name]]</h2>
-      <hue-control hue-device-service="[[hueDeviceService]]" light="[[selectedLight.id]]"></hue-control>
+      <hue-control hue-device-service="[[hueDeviceService]]" light="[[selectedLight.id]]"
+        on="[[selectedLight.on]]" reachable="[[selectedLight.reachable]]"></hue-control>
       <div class="buttons">
         <paper-button dialog-confirm>OK</paper-button>
       </div>
