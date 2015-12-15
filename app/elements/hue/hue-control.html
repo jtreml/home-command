@@ -7,16 +7,24 @@
     :host {
       display: block;
       box-sizing: border-box;
+
+      --paper-slider-active-color: var(--default-primary-color);
+      --paper-slider-knob-color: var(--default-primary-color);
     }
   </style>
 
   <template>
     <div class="layout horizontal">
-      <hue-light hue="[[color.h]]" saturation="[[color.s]]" brightness="[[color.b]]"
-        style="width: 200px; height: 200px;"></hue-light>
+      <div class="layout vertical center">
+        <hue-light hue="[[color.h]]" saturation="[[color.s]]" brightness="[[color.b]]"
+          on="[[on]]" reachable="[[reachable]]"
+          style="width: 200px; height: 200px; margin-bottom: 16px; margin-right: 10px; margin-top: -5px;">
+        </hue-light>
+        <paper-toggle-button active="{{myOn}}" disabled="[[!reachable]]"></paper-toggle-button>
+      </div>
       <div class="layout vertical">
         <color-picker id="colorPicker" width="200" height="200"></color-picker>
-        <paper-slider min="0" max="254" value="{{brightness}}"></paper-slider>
+        <paper-slider min="0" max="254" value="{{brightness}}" disabled="[[!reachable]]"></paper-slider>
       </div>
     </div>
   </template>
@@ -42,6 +50,7 @@
             value: 0
           },
           rgb: Object,
+          myOn: false,
 
           // Data exchanged with light visualization
           color: {
@@ -49,6 +58,8 @@
             notify: true,
             value: { h: 0, s: 0, b: 0 }
           },
+          on: false,
+          reachable: false,
 
           // Internal stuff
           graceWindow: {
@@ -68,6 +79,7 @@
         observers: [
           '_lightChanged(light)',
           '_brightnessChanged(brightness)',
+          '_onChanged(myOn)'
           // '_rgbChanged(rgb)',
         ],
 
@@ -109,6 +121,10 @@
           }
           console.log(color)
           this.set('color', color)
+
+          this.set('myOn', light.on)
+          this.set('on', light.on)
+          this.set('reachable', light.reachable)
         },
 
         _brightnessChanged: function(brightness) {
@@ -128,7 +144,22 @@
             s: this.color.s,
             b: brightness / 254
           })
-          // console.log(brightness)
+          this._updateLightState()
+        },
+
+        _onChanged: function(myOn) {
+          console.log('_onChanged')
+
+          if(!this.initialized)
+            return
+
+          if(Date.now() < Math.max(this.lastChangeOut, this.lastChangeIn) + this.graceWindow)
+            return
+
+          console.log('_onChanged FIRE')
+
+          this.lastChangeOut = Date.now()
+          this.set('on', this.myOn)
           this._updateLightState()
         },
 
@@ -148,9 +179,8 @@
           this.set('color', {
             h: hsb.h,
             s: hsb.s,
-            b: this.color.brightness
+            b: this.color.b
           })
-          // console.log(color)
           this._updateLightState()
         },
 
@@ -158,7 +188,8 @@
           this.hueDeviceService.setLightState(this.light, {
             hue: Math.round(this.color.h * 65280),
             sat: Math.round(this.color.s * 254),
-            bri: Math.round(this.color.b * 254)
+            bri: Math.round(this.color.b * 254),
+            on: this.on
           })
         },
 
