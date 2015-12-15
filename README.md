@@ -93,3 +93,4 @@ Nevertheless, if you find issues or better solutions for certain aspects, feel f
 ## Credits
 
 - Lights _dancing to the beat_ is built with a modified version of Teemu Pöntelin's awesome "[Drum Machina](https://github.com/tehapo/web-audio-sample-demo)" demo.
+- Dial icon by [useiconic.com via Noun Project](https://thenounproject.com/icon/208576/)
