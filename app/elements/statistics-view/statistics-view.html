@@ -1,0 +1,120 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="statistics-view">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <paper-header-panel class="fit">
+
+      <div class="paper-header">Header</div>
+
+      <div class="fit">
+
+        <vaadin-bubble-chart>
+          <title text=""></title>
+          <exporting enabled="false"></exporting>
+          <legend enabled="false"></legend>
+
+          <x-axis min="-1" max="24" tick-interval="1" minor-tick-interval="1" grid-line-width="0" start-on-tick="false" end-on-tick="false" minor-grid-line-width="1" type="categories">
+            <title text="Hour of day" style='{"color": "#999999", "font-size": "11px"}'></title>
+            <labels y="10" style='{"font-size": "11px"}' formatter="function() { return this.axis.userOptions.labels.categories[this.value] }">
+            <categories>
+              <category>00:00</category>
+              <category>01:00</category>
+              <category>02:00</category>
+              <category>03:00</category>
+              <category>04:00</category>
+              <category>05:00</category>
+              <category>06:00</category>
+              <category>07:00</category>
+              <category>08:00</category>
+              <category>09:00</category>
+              <category>10:00</category>
+              <category>11:00</category>
+              <category>12:00</category>
+              <category>13:00</category>
+              <category>14:00</category>
+              <category>15:00</category>
+              <category>16:00</category>
+              <category>17:00</category>
+              <category>18:00</category>
+              <category>19:00</category>
+              <category>20:00</category>
+              <category>21:00</category>
+              <category>22:00</category>
+              <category>23:00</category>
+            </categories>
+          </x-axis>
+
+          <y-axis tick-interval="1" grid-line-width="1" minor-tick-interval="0.5" start-on-tick="false" end-on-tick="false" type="category">
+            <title text="Light" style='{"color": "#999999", "font-size": "11px"}'></title>
+            <labels x="-10" style='{"font-size": "11px"}' rotation="-90" formatter="function() { return this.axis.userOptions.labels.categories[this.value] }">
+            <categories>
+              <category>Bulb 1</category>
+              <category>Bulb 2</category>
+              <category>Bulb 3</category>
+              <category>Bulb 4</category>
+              <category>Bulb 5</category>
+              <category>Bulb 6</category>
+            </categories>
+          </y-axis>
+
+          <tooltip header-format="<b>{series.name}</b><br>"
+                   point-format="{point.y:.1f} Wh">
+          </tooltip>
+
+          <plot-options>
+            <bubble color="#000011"></bubble>
+          </plot-options>
+
+          <data-series name="Bulb 1">
+              <data>
+                  [0, 0, 20], [1, 0, 15], [2, 0, 10], [3, 0, 10], [4, 0, 5], [5, 0, 15],
+                  [6, 0, 20], [7, 0, 15], [8, 0, 10], [9, 0, 10], [10, 0, 5], [11, 0, 15],
+                  [12, 0, 20], [13, 0, 15], [14, 0, 10], [15, 0, 10], [16, 0, 5], [17, 0, 15],
+                  [18, 0, 20], [19, 0, 15], [20, 0, 10], [21, 0, 10], [22, 0, 5], [23, 0, 15],
+              </data>
+          </data-series>
+          <data-series name="Bulb 2">
+              <data>
+                  [0, 1, 20], [1, 1, 15], [2, 1, 10], [3, 1, 10], [4, 1, 5], [5, 1, 15],
+                  [6, 1, 20], [7, 1, 15], [8, 1, 10], [9, 1, 10], [10, 1, 5], [11, 1, 15],
+                  [12, 1, 20], [13, 1, 15], [14, 1, 10], [15, 1, 10], [16, 1, 5], [17, 1, 15],
+                  [18, 1, 20], [19, 1, 15], [20, 1, 10], [21, 1, 10], [22, 1, 5], [23, 1, 15],
+              </data>
+          </data-series>
+          <data-series name="Bulb 3">
+              <data>
+                  
+              </data>
+          </data-series>
+        </vaadin-bubble-chart>
+      </div>
+    </paper-header-panel>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'statistics-view',
+
+        properties: {
+        },
+
+        ready: function() {
+        },
+
+        attached: function() {
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
