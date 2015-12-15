@@ -100,6 +100,23 @@
         ready: function() {
           var _this = this
 
+          var bulbRenderer = function(cell) {
+            cell.element.innerHTML = '';
+            var child = document.createElement('hue-light');
+            child.setAttribute('type', cell.row.data.type);
+            child.setAttribute('hue', cell.row.data.hue / 65280);
+            child.setAttribute('saturation', cell.row.data.saturation / 254);
+            child.setAttribute('brightness', cell.row.data.brightness / 254);
+            if(cell.row.data.on)
+              child.setAttribute('on', true)
+            if(cell.row.data.reachable)
+              child.setAttribute('reachable', true)
+            child.style.height = '40px'
+            child.style.width = '40px'
+            child.style.transform = 'rotate(90deg)'
+            cell.element.appendChild(child);
+          };
+
           var sparklineRenderer = function(cell) {
             cell.element.innerHTML = '';
             var sparkline = document.createElement('vaadin-sparkline');
@@ -129,6 +146,7 @@
           };
 
           var grid = this.$.grid
+          grid.columns[1].renderer = bulbRenderer;
           grid.columns[4].renderer = statusRenderer;
           grid.columns[5].renderer = progressRenderer;
           grid.columns[6].renderer = sparklineRenderer;
