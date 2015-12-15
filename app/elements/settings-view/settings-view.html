@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="password-label.html">
+<!-- <link rel="import" href="password-label.html"> -->
 
 <dom-module id="settings-view">
   <template>
@@ -67,12 +67,12 @@
             }
           };
 
-          var passwordRenderer = function(cell) {
-            cell.element.innerHTML = '<password-label value="' + cell.data + '"></password-label>'
-          }
+          // var passwordRenderer = function(cell) {
+          //   cell.element.innerHTML = '<password-label value="' + cell.data + '"></password-label>'
+          // }
 
           var grid = this.$.grid
-          grid.columns[3].renderer = passwordRenderer;
+          // grid.columns[3].renderer = passwordRenderer;
           grid.columns[4].renderer = statusRenderer;
         },
 
