@@ -1,5 +1,7 @@
 # Home Command (Vaadin Elements Demo Application)
 
+[![Join the chat at https://gitter.im/jtreml/home-command](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jtreml/home-command?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is a simple demo application meant to show how to build a IoT-oriented web application with Web Components (specifically [Google Polymer](https://www.polymer-project.org/1.0/)), using [Vaadin Elements](https://vaadin.com/elements) for powerful grid and charts UI components.
 
 The application connects to a brigde for the [Philips Hue](http://www.meethue.com/) lighting system, shows the status of connected light bulbs and let's the user control the lights. In short, what you get is:
