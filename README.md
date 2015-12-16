@@ -14,11 +14,11 @@
 
 This is a simple demo application meant to show how to build a IoT-oriented web application with Web Components (specifically [Google Polymer][polymer]), using [Vaadin Elements][elements] for powerful grid and charts UI components.
 
-The application connects to a brigde for the [Philips Hue][hue] lighting system, shows the status of connected light bulbs and let's the user control the lights. In short, what you get is:
+The application connects to a bridge for the [Philips Hue][hue] lighting system, shows the status of connected light bulbs and lets the user control the lights. In short, what you get is:
 
 - Custom light bulb component to visualize current state
 - Very visual grid making use of renderers, custom, Polymer and Vaadin components
-- Highly interative control component to switch lights on and off, control color and brightness
+- Highly interactive control component to switch lights on and off, control color and brightness
 - Live-updating charts to visualize current power consumption
 - Drum machine to make the lights go with the beat
 
@@ -31,7 +31,7 @@ The application connects to a brigde for the [Philips Hue][hue] lighting system,
 
 <h2 id="try">Try it out</h2>
 
-_The master branch of this demo will most likely only work in __Google Chrome__. Read the section on [browser compatibility](#browser) further down for info on the support of other browsers._
+_The master branch of this demo will most likely only work in **Google Chrome**. Read the section on [browser compatibility](#browser) further down for info on the support of other browsers._
 
 <h3 id="short">Short version</h3>
 
@@ -83,7 +83,7 @@ cd home-command && npm install && bower install
 
 The best way to try this application is of course with real Hue light bulbs. For this to work, you need to be on the same network as your Hue bridge.
 
-The application will search for new bridges and try to connect to them everytime you reload the page (i.e. click refresh in your browser). The first time you try to connect to a new bridge, you need to press the the central button on your Hue bridge and then reload the application. This allows the application to create a user account for your bridge which will then be stored in local storage and used for future connections. So this is only necessary the first time you want to connect to a new bridge. After that, everytime you reload the page, the application will read the existing user credentials from local storage and use those to reconnect to the bridge.
+The application will search for new bridges and try to connect to them every time you reload the page (i.e. click refresh in your browser). The first time you try to connect to a new bridge, you need to press the the central button on your Hue bridge and then reload the application. This allows the application to create a user account for your bridge which will then be stored in _localstorage_ and used for future connections. So this is only necessary the first time you want to connect to a new bridge. After that, everytime you reload the page, the application will read the existing user credentials from local storage and use those to reconnect to the bridge.
 
 If you don't have real Hue lights available, then you can make use of the _fake_ service that comes with the application to simulate virtual light bulbs. Just open the `app/elements/elements.html` file and comment or delete the import for the real Hue device service and the uncomment the import for the fake device service towards the end of the file. The final version should look like this:
 
@@ -124,7 +124,7 @@ npm install && bower install
 
 <h2 id="disclaimer">Disclaimer</h2>
 
-This is a demo done for educational purposes, both to learn new concepts myself as well as to showcase some of those as part of my professional tasks at my current employer. As a result, this project is neither complete nor fool proof nor functional or reliable in all its parts. It is not meant as a template of best practices and some parts will have more rough edges than others. Please keep that in mind. Also, it is still work in progress.
+This is a demo done for educational purposes, both to learn new concepts myself as well as to showcase some of those as part of my professional tasks at my current employer. As a result, this project is neither complete nor foolproof nor functional or reliable in all its parts. It is not meant as a template of best practices and some parts will have more rough edges than others. Please keep that in mind. Also, it is still work in progress.
 
 Nevertheless, if you find issues or better solutions for certain aspects, feel free to report them or send pull requests.
 
@@ -132,9 +132,10 @@ Nevertheless, if you find issues or better solutions for certain aspects, feel f
 <h2 id="credits">Credits</h2>
 
 - Lights _dancing to the beat_ is built with a modified version of Teemu Pöntelin's awesome "[Drum Machina][drum]" demo.
-- Dial icon by [useiconic.com via Noun Project][dial-icon]
+- [Dial icon][dial-icon] by useiconic.com (via [Noun Project][noun])
 - [paper-color-picker][color-picker] by David Mulder
 
 [drum]: https://github.com/tehapo/web-audio-sample-demo
 [dial-icon]: https://thenounproject.com/icon/208576/
+[noun]: https://thenounproject.com/
 [color-picker]: https://github.com/David-Mulder/paper-color-picker/
