@@ -102,10 +102,14 @@
           var svgDoc = this.$.svg
 
           var fill = svgDoc.getElementById("bulb-fill")
+          // Workaround because the above line doesn't work in Safari
+          if(!fill) fill = this._findNode(svgDoc.children, "bulb-fill", this._findNode)
           fill.setAttributeNS(null, 'fill', color)
           fill.setAttributeNS(null, 'visibility', this.on ? 'visible' : 'hidden')
 
           var glow = svgDoc.getElementById("bulb-glow")
+          // Workaround because the above line doesn't work in Safari
+          if(!glow) glow = this._findNode(svgDoc.children, "bulb-glow", this._findNode)
           glow.setAttributeNS(null, 'fill', color)
           glow.setAttributeNS(null, 'opacity', this.brightness)
           glow.setAttributeNS(null, 'visibility', this.on ? 'visible' : 'hidden')
@@ -149,6 +153,18 @@
               g: Math.round(g * 255),
               b: Math.round(b * 255)
           }
+        },
+
+        _findNode: function(nodes, id, self) {
+          for(var i = 0; i < nodes.length; i++) {
+            var node = nodes[i]
+            if(node.attributes.id && node.attributes.id.value == id)
+              return node
+            node = self(node.children, id, self)
+            if(node)
+              return node
+          }
+          return undefined
         }
       });
     })();
