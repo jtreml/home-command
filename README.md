@@ -8,8 +8,8 @@
 [waffle-image]: https://badge.waffle.io/jtreml/home-command.svg?label=ready&title=Ready
 [waffle-link]: http://waffle.io/jtreml/home-command
 
-[Try it out](#try) &bullet; [Disclaimer](#disclaimer) &bullet; [Credits](#credits)
 
+[Try it out](#try) &bullet; [Browser Compatibility](#browser) &bullet; [Disclaimer](#disclaimer) &bullet; [Credits](#credits)
 
 
 This is a simple demo application meant to show how to build a IoT-oriented web application with Web Components (specifically [Google Polymer][polymer]), using [Vaadin Elements][elements] for powerful grid and charts UI components.
@@ -31,7 +31,7 @@ The application connects to a brigde for the [Philips Hue][hue] lighting system,
 
 <h2 id="try">Try it out</h2>
 
-**Please note: The application currently only works in Chrome due to ECMAScript 6 and [this color picker](https://github.com/bbrewer97202/color-picker-element/) being used.**
+_The master branch of this demo will most likely only work in __Google Chrome__. Read the section on [browser compatibility](#browser) further down for info on the support of other browsers._
 
 <h3 id="short">Short version</h3>
 
@@ -101,6 +101,25 @@ gulp serve
 ```
 
 Then head to [http://localhost:5000/](http://localhost:5000/) to try it out.
+
+
+<h2 id="browser">Browser Compatibility</h2>
+
+The project is based on Google Polymer which in turn relies on polyfills to support the widest range of browsers possible.
+
+Nevertheless, for educational reasons (and commodity), this project makes quite a bit of use of ECMAScript 6 features which prevents it from functioning in some current browsers. For the time being, if you want to test this project and play with it, I highly recommend to use [Google Chrome][chrome].
+
+If you want to try it out in other browsers, you can check out the [es6-transpile branch][es6-branch]. This branch has a modified version of the gulp build script, which includes a _transpilation_ step that compiles the original ECMAScript 6 code to current standard Javascript (ECMAScript 5) code (details [here][es6-transpile]) and workarounds for a few quirks discovered in other browsers. With this, the project should run fine in almost all current browsers.
+
+If you decide to try out the transpile branch, don't forget to install the necessary tools and dependencies the first time you switch to the branch:
+
+```sh
+npm install && bower install
+```
+
+[chrome]: https://www.google.com/chrome/
+[es6-branch]: https://github.com/jtreml/home-command/tree/es6-transpile
+[es6-transpile]: https://github.com/PolymerElements/polymer-starter-kit/blob/master/docs/add-es2015-support-babel.md
 
 
 <h2 id="disclaimer">Disclaimer</h2>
