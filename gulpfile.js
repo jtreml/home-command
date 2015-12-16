@@ -102,7 +102,7 @@ gulp.task('js', function () {
    })))
    .pipe($.sourcemaps.write('.'))
    .pipe(gulp.dest('.tmp/'))
-   .pipe(gulp.dest(dist()));
+   .pipe(gulp.dest('dist/'));
 });
 
 // Compile and automatically prefix stylesheets
@@ -176,7 +176,7 @@ gulp.task('fonts', function () {
 // Scan your HTML for assets & optimize them
 gulp.task('html', function () {
   return optimizeHtmlTask(
-    [dist('/**/*.html'), '!' + dist('/{elements,test}/**/*.html')],
+    ['dist/**/*.html', '!dist/{elements,test}/**/*.html'],
     'dist');
 });
 
