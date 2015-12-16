@@ -118,7 +118,7 @@ npm install && bower install
 ```
 
 [chrome]: https://www.google.com/chrome/
-[es6-branch]: https://github.com/jtreml/home-command/tree/es6-transpile
+[es6-branch]: https://github.com/jtreml/home-command/compare/master...es6-transpile
 [es6-transpile]: https://github.com/PolymerElements/polymer-starter-kit/blob/master/docs/add-es2015-support-babel.md
 
 
@@ -131,11 +131,12 @@ Nevertheless, if you find issues or better solutions for certain aspects, feel f
 
 <h2 id="credits">Credits</h2>
 
-- Lights _dancing to the beat_ is built with a modified version of Teemu Pöntelin's awesome "[Drum Machina][drum]" demo.
+- Lights _dancing to the beat_ is built with a [modified version][drum-mod] of Teemu Pöntelin's awesome "[Drum Machina][drum]" demo.
 - [Dial icon][dial-icon] by useiconic.com (via [Noun Project][noun])
 - [paper-color-picker][color-picker] by David Mulder
 
 [drum]: https://github.com/tehapo/web-audio-sample-demo
+[drum-mod]: https://github.com/jtreml/web-audio-sample-demo/compare/master...mods
 [dial-icon]: https://thenounproject.com/icon/208576/
 [noun]: https://thenounproject.com/
 [color-picker]: https://github.com/David-Mulder/paper-color-picker/
