@@ -1,16 +1,20 @@
 # Home Command (Vaadin Elements Demo Application)
 
 
-[![Join the chat at https://gitter.im/jtreml/home-command](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jtreml/home-command?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Stories in Ready](https://badge.waffle.io/jtreml/home-command.svg?label=ready&title=Ready)](http://waffle.io/jtreml/home-command)
+[![Join the chat at https://gitter.im/jtreml/home-command][gitter-image]][gitter-link] [![Stories in Ready][waffle-image]][waffle-link]
 
+[gitter-image]: https://badges.gitter.im/Join%20Chat.svg
+[gitter-link]: https://gitter.im/jtreml/home-command?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[waffle-image]: https://badge.waffle.io/jtreml/home-command.svg?label=ready&title=Ready
+[waffle-link]: http://waffle.io/jtreml/home-command
 
 [Try it out](#try) &bullet; [Disclaimer](#disclaimer) &bullet; [Credits](#credits)
 
 
-This is a simple demo application meant to show how to build a IoT-oriented web application with Web Components (specifically [Google Polymer](https://www.polymer-project.org/1.0/)), using [Vaadin Elements](https://vaadin.com/elements) for powerful grid and charts UI components.
 
+This is a simple demo application meant to show how to build a IoT-oriented web application with Web Components (specifically [Google Polymer][polymer]), using [Vaadin Elements][elements] for powerful grid and charts UI components.
 
-The application connects to a brigde for the [Philips Hue](http://www.meethue.com/) lighting system, shows the status of connected light bulbs and let's the user control the lights. In short, what you get is:
+The application connects to a brigde for the [Philips Hue][hue] lighting system, shows the status of connected light bulbs and let's the user control the lights. In short, what you get is:
 
 - Custom light bulb component to visualize current state
 - Very visual grid making use of renderers, custom, Polymer and Vaadin components
@@ -19,6 +23,10 @@ The application connects to a brigde for the [Philips Hue](http://www.meethue.co
 - Drum machine to make the lights go with the beat
 
 ![Screenshot](screenshot.png)
+
+[polymer]: https://www.polymer-project.org/1.0/
+[elements]: https://vaadin.com/elements
+[hue]: http://www.meethue.com/
 
 
 <h2 id="try">Try it out</h2>
@@ -104,6 +112,10 @@ Nevertheless, if you find issues or better solutions for certain aspects, feel f
 
 <h2 id="credits">Credits</h2>
 
-- Lights _dancing to the beat_ is built with a modified version of Teemu Pöntelin's awesome "[Drum Machina](https://github.com/tehapo/web-audio-sample-demo)" demo.
-- Dial icon by [useiconic.com via Noun Project](https://thenounproject.com/icon/208576/)
-- [paper-color-picker](https://github.com/David-Mulder/paper-color-picker/) by David Mulder
+- Lights _dancing to the beat_ is built with a modified version of Teemu Pöntelin's awesome "[Drum Machina][drum]" demo.
+- Dial icon by [useiconic.com via Noun Project][dial-icon]
+- [paper-color-picker][color-picker] by David Mulder
+
+[drum]: https://github.com/tehapo/web-audio-sample-demo
+[dial-icon]: https://thenounproject.com/icon/208576/
+[color-picker]: https://github.com/David-Mulder/paper-color-picker/
