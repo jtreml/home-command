@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/color-picker-element/dist/color-picker.html">
+<link rel="import" href="../../bower_components/paper-color-picker/paper-color-circle.html">
 
 <dom-module id="hue-control">
 
@@ -23,7 +23,7 @@
         <paper-toggle-button active="{{myOn}}" disabled="[[!reachable]]"></paper-toggle-button>
       </div>
       <div class="layout vertical">
-        <color-picker id="colorPicker" width="200" height="200"></color-picker>
+        <paper-color-circle id="colorPicker" style="width: 200px; height: 200px;"></paper-color-circle>
         <paper-slider id="slider" min="1" max="254" immediate-value="{{brightness}}" value="{{brightnessIn}}" disabled="[[!enabled]]" pin="true"></paper-slider>
       </div>
     </div>
@@ -125,14 +125,20 @@
         ],
 
         ready: function() {
+          var _this = this
+
           this._fApplyBrightness = this._applyBrightness.bind(this)
           this._fApplyRgb = this._applyRgb.bind(this)
 
           this.initialized  = true
 
           var fRgbChanged = this._rgbChanged.bind(this)
-          this.$.colorPicker.addEventListener('colorselected', function(e) {
-            fRgbChanged(e.detail.rgb)
+          this.$.colorPicker.addEventListener('color-changed', function(e) {
+            fRgbChanged({
+              r: _this.$.colorPicker.color.red,
+              g: _this.$.colorPicker.color.green,
+              b: _this.$.colorPicker.color.blue
+            })
           })
         },
 
