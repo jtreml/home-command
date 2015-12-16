@@ -134,6 +134,9 @@
 
           var fRgbChanged = this._rgbChanged.bind(this)
           this.$.colorPicker.addEventListener('color-changed', function(e) {
+            if(!_this.enabled)
+              return
+
             fRgbChanged({
               r: _this.$.colorPicker.color.red,
               g: _this.$.colorPicker.color.green,
