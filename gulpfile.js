@@ -68,7 +68,7 @@ var imageOptimizeTask = function (src, dest) {
 };
 
 var optimizeHtmlTask = function (src, dest) {
-  var assets = $.useref.assets({searchPath: ['.tmp', 'app', 'dist']});
+  var assets = $.useref.assets();
 
   return gulp.src(src)
     // Replace path for vulcanized assets
@@ -91,6 +91,19 @@ var optimizeHtmlTask = function (src, dest) {
     .pipe(gulp.dest(dest))
     .pipe($.size({title: 'html'}));
 };
+
+// Transpile all JS to ES5.
+gulp.task('js', function () {
+ return gulp.src(['app/**/*.{js,html}', '!app/bower_components/**/*'])
+   .pipe($.sourcemaps.init())
+   .pipe($.if('*.html', $.crisper())) // Extract JS from .html files
+   .pipe($.if('*.js', $.babel({
+     presets: ['es2015']
+   })))
+   .pipe($.sourcemaps.write('.'))
+   .pipe(gulp.dest('.tmp/'))
+   .pipe(gulp.dest(dist()));
+});
 
 // Compile and automatically prefix stylesheets
 gulp.task('styles', function () {
@@ -163,7 +176,7 @@ gulp.task('fonts', function () {
 // Scan your HTML for assets & optimize them
 gulp.task('html', function () {
   return optimizeHtmlTask(
-    ['app/**/*.html', '!app/{elements,test}/**/*.html'],
+    [dist('/**/*.html'), '!' + dist('/{elements,test}/**/*.html')],
     'dist');
 });
 
@@ -227,7 +240,7 @@ gulp.task('clean', function (cb) {
 });
 
 // Watch files for changes & reload
-gulp.task('serve', ['styles', 'elements', 'images'], function () {
+gulp.task('serve', ['styles', 'elements', 'images', 'js'], function () {
   browserSync({
     port: 5000,
     notify: false,
@@ -253,10 +266,10 @@ gulp.task('serve', ['styles', 'elements', 'images'], function () {
     }
   });
 
-  gulp.watch(['app/**/*.html'], reload);
+  gulp.watch(['app/**/*.html'], ['js', reload]);
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
   gulp.watch(['app/elements/**/*.css'], ['elements', reload]);
-  gulp.watch(['app/{scripts,elements}/**/{*.js,*.html}'], ['jshint']);
+  gulp.watch(['app/{scripts,elements}/**/{*.js,*.html}'], ['jshint', 'js']);
   gulp.watch(['app/images/**/*'], reload);
 });
 
@@ -288,7 +301,7 @@ gulp.task('default', ['clean'], function (cb) {
   // Uncomment 'cache-config' after 'rename-index' if you are going to use service workers.
   runSequence(
     ['copy', 'styles'],
-    'elements',
+    ['elements', 'js'],
     ['jshint', 'images', 'fonts', 'html'],
     'vulcanize','rename-index', 'remove-old-build-index', // 'cache-config',
     cb);
