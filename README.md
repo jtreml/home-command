@@ -1,24 +1,31 @@
 # Home Command (Vaadin Elements Demo Application)
 
+
 [![Join the chat at https://gitter.im/jtreml/home-command](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jtreml/home-command?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Stories in Ready](https://badge.waffle.io/jtreml/home-command.svg?label=ready&title=Ready)](http://waffle.io/jtreml/home-command)
 
+
+[Try it out](#try) &bullet; [Disclaimer](#disclaimer) &bullet; [Credits](#credits)
+
+
 This is a simple demo application meant to show how to build a IoT-oriented web application with Web Components (specifically [Google Polymer](https://www.polymer-project.org/1.0/)), using [Vaadin Elements](https://vaadin.com/elements) for powerful grid and charts UI components.
+
 
 The application connects to a brigde for the [Philips Hue](http://www.meethue.com/) lighting system, shows the status of connected light bulbs and let's the user control the lights. In short, what you get is:
 
 - Custom light bulb component to visualize current state
-- Very visual grid making use of renderes, custom, Polymer and Vaadin components
+- Very visual grid making use of renderers, custom, Polymer and Vaadin components
 - Highly interative control component to switch lights on and off, control color and brightness
 - Live-updating charts to visualize current power consumption
 - Drum machine to make the lights go with the beat
 
 ![Screenshot](screenshot.png)
 
-## Try it out
+
+<h2 id="try">Try it out</h2>
 
 **Please note: The application currently only works in Chrome due to ECMAScript 6 and [this color picker](https://github.com/bbrewer97202/color-picker-element/) being used.**
 
-### Short version
+<h3 id="short">Short version</h3>
 
 Download tools and dependencies and run the application
 
@@ -43,7 +50,7 @@ gulp serve
 ```
 
 
-### Long version
+<h3 id="long">Long version</h3>
 
 #### Tools
 
@@ -88,15 +95,15 @@ gulp serve
 Then head to [http://localhost:5000/](http://localhost:5000/) to try it out.
 
 
-## Disclaimer
+<h2 id="disclaimer">Disclaimer</h2>
 
 This is a demo done for educational purposes, both to learn new concepts myself as well as to showcase some of those as part of my professional tasks at my current employer. As a result, this project is neither complete nor fool proof nor functional or reliable in all its parts. It is not meant as a template of best practices and some parts will have more rough edges than others. Please keep that in mind. Also, it is still work in progress.
 
 Nevertheless, if you find issues or better solutions for certain aspects, feel free to report them or send pull requests.
 
 
-## Credits
+<h2 id="credits">Credits</h2>
 
 - Lights _dancing to the beat_ is built with a modified version of Teemu Pöntelin's awesome "[Drum Machina](https://github.com/tehapo/web-audio-sample-demo)" demo.
 - Dial icon by [useiconic.com via Noun Project](https://thenounproject.com/icon/208576/)
-- [Color picker](https://github.com/bbrewer97202/color-picker-element/) by Ben Brewer
+- [paper-color-picker](https://github.com/David-Mulder/paper-color-picker/) by David Mulder
