@@ -38,7 +38,7 @@ _The master branch of this demo will most likely only work in **Google Chrome**.
 Download tools and dependencies and run the application
 
 ```sh
-cd home-command && npm install && bower install
+cd home-command && npm install -g gulp bower && npm install && bower install
 gulp serve
 ```
 
