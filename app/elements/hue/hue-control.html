@@ -269,15 +269,17 @@
           this._removeCurrentListener()
 
           var fLightStateChanged = this._lightStateChanged.bind(this)
-          this.listener = this.hueDeviceService.addEventListener(
-            'light-' + light + '-changed',
-            function(e) { fLightStateChanged(e.detail) }
-          )
+          this.listener = {
+            e: 'light-' + light + '-changed',
+            fn: function(e) { fLightStateChanged(e.detail) }
+          }
+          this.hueDeviceService.addEventListener(this.listener.e, this.listener.fn)
         },
 
         _removeCurrentListener: function() {
           if(this.hueDeviceService && this.listener) {
-            this.hueDeviceService.removeEventListener(this.listener)
+            this.hueDeviceService.removeEventListener(
+              this.listener.e, this.listener.fn)
             this.listener = undefined
           }
         },
