@@ -156,6 +156,14 @@
           // grid.columns[6].renderer = sparklineRenderer
 
           grid.rowDetailsGenerator = function(rowIndex) {
+            // Note: Polymer 1.0 doesn't support imperative data binding, so the
+            // in-row control will not react to external events (i.e. light state
+            // changes)
+            //
+            // See http://stackoverflow.com/questions/30880967/binding-imperatively/30882750#30882750
+            // for more details.
+            //
+            // Workaround would be messy and just clutter this demo application.
             var elem = document.createElement('hue-control')
             elem.hueDeviceService = _this.hueDeviceService
             elem.light = _this.selectedLight.id
