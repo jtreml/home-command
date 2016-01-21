@@ -268,28 +268,28 @@
         },
 
         _updateSeries: function(series, limit, current, value) {
-          var data = series.data
+          var data = series.options.data
 
           // Cut off all points that have fallen outside the window
           // (but remember the last one in case we need to interpolate)
           var x, y
-          while(data.length > 0 && data[0].x < limit) {
-            x = data[0].x
-            y = data[0].y
+          while(data.length > 0 && data[0][0] < limit) {
+            x = data[0][0]
+            y = data[0][1]
             series.removePoint(0, false)
           }
 
           // If earliest points still in list is strictly after the limit,
           // interpolate with previously removed point to get a value exactly
           // at the limit and avoid jumpy lines at the beginning of the chart
-          if(data.length > 0 && x && data[0].x > limit) {
-            var rel = (limit - x) / (data[0].x - x)
-            var val = y + (data[0].y - y) * rel
+          if(data.length > 0 && x && data[0][0] > limit) {
+            var rel = (limit - x) / (data[0][0] - x)
+            var val = y + (data[0][1] - y) * rel
             series.addPoint([limit, val], false)
           }
 
           // Add new point to the list
-          if(data.length == 0 || data[data.length - 1].x < current) {
+          if(data.length == 0 || data[data.length - 1][0] < current) {
             series.addPoint([current, value], false)
           }
         }
