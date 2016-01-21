@@ -153,6 +153,11 @@
         },
 
         _lightChanged: function(light) {
+          if(!light) {
+            this._removeCurrentListener()
+            return
+          }
+
           this._lightStateChanged(this.hueDeviceService.getLight(light))
           this._addListener(light)
         },
