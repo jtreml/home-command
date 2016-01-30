@@ -140,3 +140,17 @@ Nevertheless, if you find issues or better solutions for certain aspects, feel f
 [dial-icon]: https://thenounproject.com/icon/208576/
 [noun]: https://thenounproject.com/
 [color-picker]: https://github.com/David-Mulder/paper-color-picker/
+
+
+<h2 id="license">License</h2>
+
+The code in this repository is released under Apache License 2.0.
+
+Part of this application is based on [Polymer Starter Kit][starter-kit] which is a [BSD style license][bsd]. Respective notices are present at the beginning of all source files taken from Polymer Starter Kit.
+
+For chart visualizations, [Vaadin Charts][vaadin-charts] is used which is licensed under [CVAL 3.0][cval-3-0] terms.
+
+[bsd]: https://github.com/PolymerElements/polymer-starter-kit/blob/master/LICENSE.md
+[starter-kit]: https://github.com/PolymerElements/polymer-starter-kit
+[vaadin-charts]: https://vaadin.com/elements
+[cval-3-0]: https://vaadin.com/license/cval-3
