@@ -1,5 +1,4 @@
-# Home Command (Vaadin Elements Demo Application)
-
+# Home Command - Philips Hue control with Vaadin Elements
 
 [![Join the chat at https://gitter.im/jtreml/home-command][gitter-image]][gitter-link] [![Stories in Ready][waffle-image]][waffle-link]
 
@@ -9,7 +8,7 @@
 [waffle-link]: http://waffle.io/jtreml/home-command
 
 
-[Try it out](#try) &bullet; [Browser Compatibility](#browser) &bullet; [Disclaimer](#disclaimer) &bullet; [Credits](#credits)
+[Try it out](#try) &bullet; [Browser Compatibility](#browser) &bullet; [Disclaimer](#disclaimer) &bullet; [Credits](#credits) &bullet; [License](#license)
 
 
 This is a simple demo application meant to show how to build a IoT-oriented web application with Web Components (specifically [Google Polymer][polymer]), using [Vaadin Elements][elements] for powerful grid and charts UI components.
@@ -17,7 +16,7 @@ This is a simple demo application meant to show how to build a IoT-oriented web 
 The application connects to a bridge for the [Philips Hue][hue] lighting system, shows the status of connected light bulbs and lets the user control the lights. In short, what you get is:
 
 - Custom light bulb component to visualize current state
-- Very visual grid making use of renderers, custom, Polymer and Vaadin components
+- Very visual grid making use of renderers with custom Polymer and Vaadin components
 - Highly interactive control component to switch lights on and off, control color and brightness
 - Live-updating charts to visualize current power consumption
 - Drum machine to make the lights go with the beat
