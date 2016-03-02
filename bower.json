@@ -9,9 +9,9 @@
     "neon-elements": "PolymerElements/neon-elements#~1.0.0",
     "page": "visionmedia/page.js#~1.6.3",
     "jshue": "https://github.com/blargoner/jshue.git#0.3.0",
-    "vaadin-grid": "~1.0.0",
-    "vaadin-charts": "~3.0.0-alpha7",
-    "vaadin-combo-box": "~1.0.0-alpha3",
+    "vaadin-grid": "^1.0.0",
+    "vaadin-charts": "^3.0.0-beta1",
+    "vaadin-combo-box": "^1.0.0-alpha6",
     "web-audio-sample-demo": "https://github.com/jtreml/web-audio-sample-demo.git#mods",
     "paper-color-picker": "~0.9.1"
   },
