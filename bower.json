@@ -21,6 +21,8 @@
   },
   "resolutions": {
     "polymer": "~1.2.3",
-    "iron-overlay-behavior": "~1.1.2"
+    "iron-overlay-behavior": "~1.1.2",
+    "iron-icons": "~1.1.2",
+    "paper-styles": "~1.1.3",
   }
 }
